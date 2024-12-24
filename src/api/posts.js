@@ -14,3 +14,24 @@ export const createPost = async (post) => {
   })
   return await res.json()
 }
+
+// DELETE Post Function
+export const deletePost = async (postId) => {
+  try {
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/posts/${postId}`,
+      {
+        method: 'DELETE',
+      },
+    )
+
+    if (!res.ok) {
+      throw new Error(`Error deleting post: ${res.statusText}`)
+    }
+
+    return true // Indicate successful deletion
+  } catch (error) {
+    console.error('Error deleting post:', error)
+    throw error // Re-throw the error for further handling
+  }
+}

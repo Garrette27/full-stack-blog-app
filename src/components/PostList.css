@@ -1,0 +1,122 @@
+/* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* Container for Blog Posts */
+.post-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Individual Post Card */
+.post {
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.post:hover {
+  transform: translateY(-5px);
+}
+
+/* Title Styling */
+.post h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Content Styling */
+.post-content {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Subheadings */
+.post h3,
+.post h4 {
+  font-size: 1.5rem;
+  color: #444;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Footer Styling */
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  font-size: 0.875rem;
+  color: #777;
+}
+
+.post-footer span {
+  margin-right: 15px;
+}
+
+/* Author & Date Styling */
+.post-author,
+.post-date {
+  font-style: italic;
+}
+
+/* Button Styles */
+.delete-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #d32f2f;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+  .post-list-container {
+    padding: 10px;
+  }
+
+  .post {
+    padding: 15px;
+  }
+
+  .post h2 {
+    font-size: 1.5rem;
+  }
+
+  .post-content {
+    font-size: 0.9rem;
+  }
+
+  /* Ensure subheadings are readable on smaller screens */
+  .post h3,
+  .post h4 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Content Styling */
+.post-content {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+  white-space: pre-wrap; /* Preserve white spaces and line breaks */
+}

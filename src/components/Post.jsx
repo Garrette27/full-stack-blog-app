@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { DeletePostButton } from './DeletePostButton' // Import the DeletePostButton component
+import { EditPostButton } from './EditPostButton' // Import the EditPostButton component
 import { format } from 'date-fns' // Import date-fns for date formatting
 import ReactHtmlParser from 'html-react-parser' // Import the parser
 
@@ -24,17 +25,21 @@ export function Post({ title, contents, author, postId, createdAt }) {
           {/* Format the createdAt date if it exists */}
         </small>
       </p>
+      <EditPostButton
+        postId={postId}
+        currentTitle={title}
+        currentContents={contents}
+      />
       <DeletePostButton postId={postId} />{' '}
       {/* Pass postId as a prop to DeletePostButton */}
     </article>
   )
 }
 
-// Define PropTypes for the component
 Post.propTypes = {
-  title: PropTypes.string.isRequired, // Add title as required
-  contents: PropTypes.string, // Contents are now a string containing HTML
+  title: PropTypes.string.isRequired,
+  contents: PropTypes.string,
   author: PropTypes.string,
-  postId: PropTypes.string.isRequired, // Add postId as a required prop
-  createdAt: PropTypes.string, // Add createdAt as an optional prop
+  postId: PropTypes.string.isRequired,
+  createdAt: PropTypes.string,
 }

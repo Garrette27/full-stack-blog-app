@@ -1,7 +1,6 @@
-// PostList.jsx
+import React from 'react' // Add this import to resolve the error
 import PropTypes from 'prop-types'
 import { Post } from './Post.jsx'
-import React from 'react'
 import './PostList.css'
 
 export function PostList({ posts = [] }) {

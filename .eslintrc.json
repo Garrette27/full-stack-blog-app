@@ -19,6 +19,9 @@
       "version": "detect"
     }
   },
+  "rules": {
+    "jsx-a11y/media-has-caption": "off"
+  },
   "overrides": [
     {
       "files": ["*.js", "*.jsx"]

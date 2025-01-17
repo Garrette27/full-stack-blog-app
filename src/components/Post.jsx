@@ -1,20 +1,129 @@
 import PropTypes from 'prop-types'
-import { DeletePostButton } from './DeletePostButton' // Import the DeletePostButton component
-import { EditPostButton } from './EditPostButton' // Import the EditPostButton component
-import { format } from 'date-fns' // Import date-fns for date formatting
-import ReactHtmlParser from 'html-react-parser' // Import the parser
+import { format } from 'date-fns'
+import { likePost, sharePost } from '../api/posts.js'
+import { useState, useEffect } from 'react'
+import { DeletePostButton } from './DeletePostButton'
+import { EditPostButton } from './EditPostButton'
 
-export function Post({ title, contents, author, postId, createdAt }) {
-  console.log('Post ID:', postId) // Debugging output
+export function Post({
+  title,
+  contents,
+  author,
+  postId,
+  createdAt,
+  imageUrl,
+  videoUrl,
+  initialLikeCount, // Assuming you pass the initial like count
+}) {
+  // State to hold like count
+  const [likeCount, setLikeCount] = useState(initialLikeCount)
+
+  const handleLike = async (id) => {
+    try {
+      const updatedPost = await likePost(id)
+      setLikeCount(updatedPost.likeCount) // Assuming `likeCount` is updated in the response
+      alert('Post liked successfully!')
+    } catch (error) {
+      alert('Failed to like post. Please try again.')
+    }
+  }
+
+  const handleShare = async (id) => {
+    try {
+      await sharePost(id)
+      alert('Post shared successfully!')
+    } catch (error) {
+      alert('Failed to share post. Please try again.')
+    }
+  }
+
+  // Function to detect and embed an image
+  const embedImage = (url) => {
+    return /\.(jpeg|jpg|gif|png|bmp|webp)$/i.test(url) ? (
+      <img src={url} alt='Embedded content' className='post-image' />
+    ) : null
+  }
+
+  // Function to detect and embed a YouTube video
+  const embedVideo = (url) => {
+    const youtubeRegex =
+      /https:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/
+    const match = url.match(youtubeRegex)
+    if (match) {
+      const videoId = match[2]
+      return (
+        <iframe
+          title='Descriptive Title'
+          width='560'
+          height='315'
+          src={`https://www.youtube.com/embed/${videoId}`}
+          frameBorder='0'
+          allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+          allowFullScreen
+        ></iframe>
+      )
+    }
+    return null
+  }
+
+  // Function to parse the content and embed images/videos automatically
+  const parseContentWithEmbeds = (content) => {
+    const urlRegex = /https?:\/\/[^\s]+/g
+    const urls = content.match(urlRegex)
+    if (urls) {
+      return urls.map((url, index) => {
+        // Check if the URL is an image or a video
+        const image = embedImage(url)
+        const video = embedVideo(url)
+
+        if (image) {
+          return <div key={index}>{image}</div>
+        } else if (video) {
+          return <div key={index}>{video}</div>
+        }
+        return (
+          <a key={index} href={url} target='_blank' rel='noopener noreferrer'>
+            {url}
+          </a>
+        ) // If it's a link, return it as a clickable URL
+      })
+    }
+    return content // If no URLs, just return the content as is
+  }
+
+  // Use Effect to handle changes to like count on initial load
+  useEffect(() => {
+    if (initialLikeCount !== undefined) {
+      setLikeCount(initialLikeCount)
+    }
+  }, [initialLikeCount])
 
   return (
     <article className='post'>
-      <h2>{title}</h2> {/* Changed to h2 for more prominence */}
-      {/* Parse and render the HTML content */}
-      <div className='post-content'>{ReactHtmlParser(contents)}</div>
+      <div className='post-header'>
+        <h2 id={`post${postId}`}>{title}</h2>
+      </div>
+
+      <div className='post-content'>
+        {parseContentWithEmbeds(contents)}{' '}
+        {/* This is where the embedding happens */}
+        {imageUrl && <img src={imageUrl} alt={title} className='post-image' />}
+        {videoUrl && (
+          <video controls>
+            <track
+              kind='subtitles'
+              src='path_to_captions.vtt'
+              srcLang='en'
+              label='English'
+            />
+            <source src='video_file.mp4' type='video/mp4' />
+            Your browser does not support the video tag.
+          </video>
+        )}
+      </div>
+
       {author && (
         <em>
-          <br />
           Written by <strong>{author}</strong>
         </em>
       )}
@@ -22,16 +131,24 @@ export function Post({ title, contents, author, postId, createdAt }) {
         <small>
           Published:{' '}
           {createdAt ? format(new Date(createdAt), 'PPpp') : 'Unknown'}
-          {/* Format the createdAt date if it exists */}
         </small>
       </p>
+
+      <div className='post-footer'>
+        <button className='like-button' onClick={() => handleLike(postId)}>
+          Like {likeCount > 0 && `(${likeCount})`}
+        </button>
+        <button className='share-button' onClick={() => handleShare(postId)}>
+          Share
+        </button>
+      </div>
+
       <EditPostButton
         postId={postId}
         currentTitle={title}
         currentContents={contents}
       />
-      <DeletePostButton postId={postId} />{' '}
-      {/* Pass postId as a prop to DeletePostButton */}
+      <DeletePostButton postId={postId} />
     </article>
   )
 }
@@ -42,4 +159,7 @@ Post.propTypes = {
   author: PropTypes.string,
   postId: PropTypes.string.isRequired,
   createdAt: PropTypes.string,
+  imageUrl: PropTypes.string,
+  videoUrl: PropTypes.string,
+  initialLikeCount: PropTypes.number, // For the initial like count
 }

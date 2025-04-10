@@ -1,0 +1,1409 @@
+.pln{color:#000}@media screen{.str{color:#080}.kwd{color:#008}.com{color:#800}.typ{color:#606}.lit{color:#066}.pun,.opn,.clo{color:#660}.tag{color:#008}.atn{color:#606}.atv{color:#080}.dec,.var{color:#606}.fun{color:red}}@media print,projection{.str{color:#060}.kwd{color:#006;font-weight:bold}.com{color:#600;font-style:italic}.typ{color:#404;font-weight:bold}.lit{color:#044}.pun,.opn,.clo{color:#440}.tag{color:#006;font-weight:bold}.atn{color:#404}.atv{color:#060}}pre.prettyprint{padding:2px;border:1px solid #888}ol.linenums{margin-top:0;margin-bottom:0}li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}
+body, html {
+  margin:0; padding: 0;
+  height: 100%;
+}
+body {
+    font-family: Helvetica Neue, Helvetica, Arial;
+    font-size: 14px;
+    color:#333;
+}
+.small { font-size: 12px; }
+*, *:after, *:before {
+  -webkit-box-sizing:border-box;
+     -moz-box-sizing:border-box;
+          box-sizing:border-box;
+  }
+h1 { font-size: 20px; margin: 0;}
+h2 { font-size: 14px; }
+pre {
+    font: 12px/1.4 Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    margin: 0;
+    padding: 0;
+    -moz-tab-size: 2;
+    -o-tab-size:  2;
+    tab-size: 2;
+}
+a { color:#0074D9; text-decoration:none; }
+a:hover { text-decoration:underline; }
+.strong { font-weight: bold; }
+.space-top1 { padding: 10px 0 0 0; }
+.pad2y { padding: 20px 0; }
+.pad1y { padding: 10px 0; }
+.pad2x { padding: 0 20px; }
+.pad2 { padding: 20px; }
+.pad1 { padding: 10px; }
+.space-left2 { padding-left:55px; }
+.space-right2 { padding-right:20px; }
+.center { text-align:center; }
+.clearfix { display:block; }
+.clearfix:after {
+  content:'';
+  display:block;
+  height:0;
+  clear:both;
+  visibility:hidden;
+  }
+.fl { float: left; }
+@media only screen and (max-width:640px) {
+  .col3 { width:100%; max-width:100%; }
+  .hide-mobile { display:none!important; }
+}
+
+.quiet {
+  color: #7f7f7f;
+  color: rgba(0,0,0,0.5);
+}
+.quiet a { opacity: 0.7; }
+
+.fraction {
+  font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-size: 10px;
+  color: #555;
+  background: #E8E8E8;
+  padding: 4px 5px;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+div.path a:link, div.path a:visited { color: #333; }
+table.coverage {
+  border-collapse: collapse;
+  margin: 10px 0 0 0;
+  padding: 0;
+}
+
+table.coverage td {
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+}
+table.coverage td.line-count {
+    text-align: right;
+    padding: 0 5px 0 20px;
+}
+table.coverage td.line-coverage {
+    text-align: right;
+    padding-right: 10px;
+    min-width:20px;
+}
+
+table.coverage td span.cline-any {
+    display: inline-block;
+    padding: 0 5px;
+    width: 100%;
+}
+.missing-if-branch {
+    display: inline-block;
+    margin-right: 5px;
+    border-radius: 3px;
+    position: relative;
+    padding: 0 4px;
+    background: #333;
+    color: yellow;
+}
+
+.skip-if-branch {
+    display: none;
+    margin-right: 10px;
+    position: relative;
+    padding: 0 4px;
+    background: #ccc;
+    color: white;
+}
+.missing-if-branch .typ, .skip-if-branch .typ {
+    color: inherit !important;
+}
+.coverage-summary {
+  border-collapse: collapse;
+  width: 100%;
+}
+.coverage-summary tr { border-bottom: 1px solid #bbb; }
+.keyline-all { border: 1px solid #ddd; }
+.coverage-summary td, .coverage-summary th { padding: 10px; }
+.coverage-summary tbody { border: 1px solid #bbb; }
+.coverage-summary td { border-right: 1px solid #bbb; }
+.coverage-summary td:last-child { border-right: none; }
+.coverage-summary th {
+  text-align: left;
+  font-weight: normal;
+  white-space: nowrap;
+}
+.coverage-summary th.file { border-right: none !important; }
+.coverage-summary th.pct { }
+.coverage-summary th.pic,
+.coverage-summary th.abs,
+.coverage-summary td.pct,
+.coverage-summary td.abs { text-align: right; }
+.coverage-summary td.file { white-space: nowrap;  }
+.coverage-summary td.pic { min-width: 120px !important;  }
+.coverage-summary tfoot td { }
+
+.coverage-summary .sorter {
+    height: 10px;
+    width: 7px;
+    display: inline-block;
+    margin-left: 0.5em;
+    background: url(sort-arrow-sprite.png) no-repeat scroll 0 0 transparent;
+}
+.coverage-summary .sorted .sorter {
+    background-position: 0 -20px;
+}
+.coverage-summary .sorted-desc .sorter {
+    background-position: 0 -10px;
+}
+.status-line {  height: 10px; }
+/* yellow */
+.cbranch-no { background: yellow !important; color: #111; }
+/* dark red */
+.red.solid, .status-line.low, .low .cover-fill { background:#C21F39 }
+.low .chart { border:1px solid #C21F39 }
+.highlighted,
+.highlighted .cstat-no, .highlighted .fstat-no, .highlighted .cbranch-no{
+  background: #C21F39 !important;
+}
+/* medium red */
+.cstat-no, .fstat-no, .cbranch-no, .cbranch-no { background:#F6C6CE }
+/* light red */
+.low, .cline-no { background:#FCE1E5 }
+/* light green */
+.high, .cline-yes { background:rgb(230,245,208) }
+/* medium green */
+.cstat-yes { background:rgb(161,215,106) }
+/* dark green */
+.status-line.high, .high .cover-fill { background:rgb(77,146,33) }
+.high .chart { border:1px solid rgb(77,146,33) }
+/* dark yellow (gold) */
+.status-line.medium, .medium .cover-fill { background: #f9cd0b; }
+.medium .chart { border:1px solid #f9cd0b; }
+/* light yellow */
+.medium { background: #fff4c2; }
+
+.cstat-skip { background: #ddd; color: #111; }
+.fstat-skip { background: #ddd; color: #111 !important; }
+.cbranch-skip { background: #ddd !important; color: #111; }
+
+span.cline-neutral { background: #eaeaea; }
+
+.coverage-summary td.empty {
+    opacity: .5;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    line-height: 1;
+    color: #888;
+}
+
+.cover-fill, .cover-empty {
+  display:inline-block;
+  height: 12px;
+}
+.chart {
+  line-height: 0;
+}
+.cover-empty {
+    background: white;
+}
+.cover-full {
+    border-right: none !important;
+}
+pre.prettyprint {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.com { color: #999 !important; }
+.ignore-none { color: #999; font-weight: normal; }
+
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -48px;
+}
+.footer, .push {
+  height: 48px;
+}
+/* Base */
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    color: #333;
+    background-color: #fcfcfc;
+    font: 14px/14px -apple-system, system-ui, BlinkMacSystemFont, 'Segoe UI',
+        Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+button {
+    margin: 0;
+    border: none;
+    font: inherit;
+    color: inherit;
+}
+
+button:focus {
+    outline: none;
+}
+
+*,
+*:after,
+*:before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* Typography */
+
+h1 {
+    font-size: 20px;
+    line-height: 20px;
+    margin: 0;
+}
+
+a {
+    color: #0074d9;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.small {
+    font-size: 12px;
+}
+
+.strong {
+    font-weight: bold;
+}
+
+.center {
+    text-align: center;
+}
+
+.quiet {
+    opacity: 0.7;
+}
+
+/* Colors */
+
+.low {
+    background: #fce1e5;
+}
+
+.low--dark {
+    background: #c21f39;
+}
+
+.medium {
+    background: #fff4c2;
+}
+
+.medium--dark {
+    background: #f9cd0b;
+}
+
+.high {
+    background: rgb(230, 245, 208);
+}
+
+.high--dark {
+    background: rgb(77, 146, 33);
+}
+
+/* App */
+
+.app {
+    height: 100%;
+}
+
+/* Layout */
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 20px;
+}
+
+.layout__section {
+    flex-grow: 0;
+}
+
+.layout__section--fill {
+    flex-grow: 1;
+}
+
+.layout__section + .layout__section {
+    margin-top: 20px;
+}
+
+@media only screen and (max-width: 640px) {
+    .col3 {
+        width: 100%;
+        max-width: 100%;
+    }
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+/* Toolbar */
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.toolbar__item {
+    margin-right: 40px;
+    margin-bottom: 10px;
+}
+
+/* Toggle */
+
+.toggle {
+    display: inline-flex;
+    align-items: center;
+}
+
+.toggle__label {
+    margin-right: 0.5em;
+}
+
+.toggle__options {
+    display: inline-block;
+    border: 1px solid #0074d9;
+    border-radius: 4px;
+    color: #0074d9;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.toggle__option {
+    padding: 4px 8px;
+    background: #fcfcfc;
+}
+
+.toggle__option + .toggle__option {
+    border-left: 1px solid #0074d9;
+}
+
+.toggle__option.is-toggled {
+    color: #fff;
+    background: #0074d9;
+    border-left-color: #fcfcfc;
+}
+
+/* Expand */
+
+.expandbutton {
+    display: inline-block;
+    width: 1em;
+    margin-right: 0.25em;
+    padding: 0;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+/* Fraction */
+
+.fraction {
+    font-size: 12px;
+    color: #666;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+/* Coverage */
+
+.coverage-summary {
+    border-collapse: collapse;
+}
+
+.coverage-summary tbody tr {
+    border-bottom: 1px solid #fff;
+}
+
+.coverage-summary td,
+.coverage-summary th {
+    padding: 5px;
+}
+
+.coverage-summary th {
+    text-align: center;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.coverage-summary th.abs,
+.coverage-summary td.pct,
+.coverage-summary td.abs {
+    text-align: right;
+}
+
+.coverage-summary th.file {
+    min-width: 300px;
+    text-align: left;
+}
+
+.coverage-summary td.file {
+    white-space: nowrap;
+}
+
+.coverage-summary td.pct {
+    font-weight: 400;
+}
+
+.coverage-summary td.abs {
+    color: #666;
+    font-size: 12px;
+}
+
+.coverage-summary td.empty {
+    opacity: 0.5;
+}
+
+.coverage-summary .headercell {
+    border-top: 1px solid #eee;
+    text-align: right;
+    font-size: 12px;
+    color: #666;
+}
+
+.coverage-summary .headercell:nth-child(5n - 2),
+.coverage-summary td:nth-child(5n - 2) {
+    border-left: 2px solid #fcfcfc;
+    padding-left: 2em;
+}
+
+.filetab {
+    display: inline-block;
+    width: 1em;
+}
+
+/* Sorter */
+
+.sorter {
+    display: inline-block;
+    width: 7px;
+    height: 10px;
+    margin-left: 0.5em;
+    background: url(sort-arrow-sprite.png) no-repeat scroll 0 0 transparent;
+}
+
+.sorted .sorter {
+    background-position: 0 -20px;
+}
+
+.sorted-desc .sorter {
+    background-position: 0 -10px;
+}
+
+.sortable {
+    cursor: pointer;
+}
+
+/* Bar */
+
+.bar {
+    width: 50px;
+    height: 5px;
+    background: #fff;
+}
+
+.bar__data {
+    height: 100%;
+}
+FROM node:20
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+CMD ["npm", "start"]
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createPost } from '../api/posts.js'
+import './CreatePost1.css' // Make sure the path is correct
+
+export function CreatePost() {
+  const queryClient = useQueryClient()
+  const createPostMutation = useMutation({
+    mutationFn: (formData) => createPost(formData),
+    onSuccess: () => queryClient.invalidateQueries(['posts']),
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.target)
+    const data = {
+      title: formData.get('title'),
+      author: formData.get('author'),
+      contents: formData.get('contents'),
+    }
+    createPostMutation.mutate(data)
+  }
+
+  return (
+    <div className='container'>
+      <form className='create-post' onSubmit={handleSubmit}>
+        {/* Post Details Section */}
+        <div className='post-details'>
+          <div>
+            <label htmlFor='title'>Title:</label>
+            <input type='text' id='title' name='title' />
+          </div>
+          <div>
+            <label htmlFor='author'>Author:</label>
+            <input type='text' id='author' name='author' />
+          </div>
+          <div>
+            <label htmlFor='contents'>Contents:</label>
+            <textarea id='contents' name='contents'></textarea>
+          </div>
+          <button type='submit'>
+            {createPostMutation.isPending ? 'Creating...' : 'Create'}
+          </button>
+        </div>
+
+        {/* Additional Form Section */}
+        <div
+          style={{
+            flex: '1 1 45%',
+            display: 'grid',
+            gridTemplateColumns: '1fr', // Single column layout
+            gap: '1rem',
+            minWidth: '300px',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <label
+              htmlFor='firstName'
+              style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}
+            >
+              First Name:
+            </label>
+            <input
+              type='text'
+              id='firstName'
+              name='firstName'
+              style={{
+                padding: '0.5rem',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                fontSize: '1rem',
+                width: '100%',
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <label
+              htmlFor='lastName'
+              style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}
+            >
+              Last Name:
+            </label>
+            <input
+              type='text'
+              id='lastName'
+              name='lastName'
+              style={{
+                padding: '0.5rem',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                fontSize: '1rem',
+                width: '100%',
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <label
+              htmlFor='birthDate'
+              style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}
+            >
+              Birth Date:
+            </label>
+            <input
+              type='date'
+              id='birthDate'
+              name='birthDate'
+              style={{
+                padding: '0.5rem',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                fontSize: '1rem',
+                width: '100%',
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <label
+              htmlFor='email'
+              style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}
+            >
+              E-Mail:
+            </label>
+            <input
+              type='email'
+              id='email'
+              name='email'
+              style={{
+                padding: '0.5rem',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                fontSize: '1rem',
+                width: '100%',
+              }}
+            />
+          </div>
+          <button
+            type='submit'
+            style={{
+              marginTop: '1rem',
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#4caf50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '1rem',
+            }}
+          >
+            Send
+          </button>
+        </div>
+      </form>
+
+      {createPostMutation.isSuccess ? (
+        <>
+          <br />
+          Post created successfully!
+        </>
+      ) : null}
+    </div>
+  )
+}
+/* Container styling */
+.container {
+    margin: 2rem;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Form layout */
+  .create-post {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap; /* This will ensure that on smaller screens the columns stack properly */
+  }
+  
+  /* Post Details Section and Additional Form Section */
+  .post-details,
+  
+  /* Labels and inputs */
+  label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  /* Ensure the textarea has the correct height */
+  textarea {
+    resize: vertical;
+    min-height: 100px; /* Give the textarea a minimum height */
+  }
+  
+  /* Buttons */
+  button {
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  textarea {
+      background-color: lightyellow;  /* Temporary styling */
+    }
+    
+import { useMutation } from '@tanstack/react-query'
+import { deletePost } from '../api/posts.js'
+import PropTypes from 'prop-types' // Import PropTypes
+
+export function DeletePostButton({ postId }) {
+  const deletePostMutation = useMutation({
+    mutationFn: () => deletePost(postId),
+    onSuccess: () => {
+      alert('Post deleted successfully')
+    },
+  })
+
+  return (
+    <button
+      onClick={() => deletePostMutation.mutate()}
+      disabled={deletePostMutation.isPending}
+    >
+      {deletePostMutation.isPending ? 'Deleting...' : 'Delete Post'}
+    </button>
+  )
+}
+
+// Add PropTypes validation for the postId prop
+DeletePostButton.propTypes = {
+  postId: PropTypes.string.isRequired, // Ensure postId is passed and is a string
+}
+import { useMutation } from '@tanstack/react-query'
+import { updatePost } from '../api/posts.js'
+import PropTypes from 'prop-types'
+import { useState } from 'react'
+
+export function EditPostButton({ postId, currentTitle, currentContents }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [newTitle, setNewTitle] = useState(currentTitle)
+  const [newContents, setNewContents] = useState(currentContents)
+
+  const editPostMutation = useMutation({
+    mutationFn: () =>
+      updatePost(postId, { title: newTitle, contents: newContents }),
+    onSuccess: () => {
+      alert('Post updated successfully')
+      setIsEditing(false)
+    },
+  })
+
+  return (
+    <div>
+      {isEditing ? (
+        <div>
+          <input
+            type='text'
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+          />
+          <textarea
+            value={newContents}
+            onChange={(e) => setNewContents(e.target.value)}
+          />
+          <button onClick={() => editPostMutation.mutate()}>
+            Save Changes
+          </button>
+          <button onClick={() => setIsEditing(false)}>Cancel</button>
+        </div>
+      ) : (
+        <button onClick={() => setIsEditing(true)}>Edit Post</button>
+      )}
+    </div>
+  )
+}
+
+EditPostButton.propTypes = {
+  postId: PropTypes.string.isRequired,
+  currentTitle: PropTypes.string.isRequired,
+  currentContents: PropTypes.string.isRequired,
+}
+import PropTypes from 'prop-types'
+import { format } from 'date-fns'
+import { likePost, sharePost } from '../api/posts.js'
+import { useState, useEffect } from 'react'
+import { DeletePostButton } from './DeletePostButton'
+import { EditPostButton } from './EditPostButton'
+
+export function Post({
+  title,
+  contents,
+  author,
+  postId,
+  createdAt,
+  imageUrl,
+  videoUrl,
+  initialLikeCount, // Assuming you pass the initial like count
+}) {
+  // State to hold like count
+  const [likeCount, setLikeCount] = useState(initialLikeCount)
+
+  const handleLike = async (id) => {
+    try {
+      const updatedPost = await likePost(id)
+      setLikeCount(updatedPost.likeCount) // Assuming `likeCount` is updated in the response
+      alert('Post liked successfully!')
+    } catch (error) {
+      alert('Failed to like post. Please try again.')
+    }
+  }
+
+  const handleShare = async (id) => {
+    try {
+      await sharePost(id)
+      alert('Post shared successfully!')
+    } catch (error) {
+      alert('Failed to share post. Please try again.')
+    }
+  }
+
+  // Function to detect and embed an image
+  const embedImage = (url) => {
+    return /\.(jpeg|jpg|gif|png|bmp|webp)$/i.test(url) ? (
+      <img src={url} alt='Embedded content' className='post-image' />
+    ) : null
+  }
+
+  // Function to detect and embed a YouTube video
+  const embedVideo = (url) => {
+    const youtubeRegex =
+      /https:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/
+    const match = url.match(youtubeRegex)
+    if (match) {
+      const videoId = match[2]
+      return (
+        <iframe
+          title='Descriptive Title'
+          width='560'
+          height='315'
+          src={`https://www.youtube.com/embed/${videoId}`}
+          frameBorder='0'
+          allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+          allowFullScreen
+        ></iframe>
+      )
+    }
+    return null
+  }
+
+  // Function to parse the content and embed images/videos automatically
+  const parseContentWithEmbeds = (content) => {
+    const urlRegex = /https?:\/\/[^\s]+/g
+    const urls = content.match(urlRegex)
+    if (urls) {
+      return urls.map((url, index) => {
+        // Check if the URL is an image or a video
+        const image = embedImage(url)
+        const video = embedVideo(url)
+
+        if (image) {
+          return <div key={index}>{image}</div>
+        } else if (video) {
+          return <div key={index}>{video}</div>
+        }
+        return (
+          <a key={index} href={url} target='_blank' rel='noopener noreferrer'>
+            {url}
+          </a>
+        ) // If it's a link, return it as a clickable URL
+      })
+    }
+    return content // If no URLs, just return the content as is
+  }
+
+  // Use Effect to handle changes to like count on initial load
+  useEffect(() => {
+    if (initialLikeCount !== undefined) {
+      setLikeCount(initialLikeCount)
+    }
+  }, [initialLikeCount])
+
+  return (
+    <article className='post'>
+      <div className='post-header'>
+        <h2 id={`post${postId}`}>{title}</h2>
+      </div>
+
+      <div className='post-content'>
+        {parseContentWithEmbeds(contents)}{' '}
+        {/* This is where the embedding happens */}
+        {imageUrl && <img src={imageUrl} alt={title} className='post-image' />}
+        {videoUrl && (
+          <video controls>
+            <track
+              kind='subtitles'
+              src='path_to_captions.vtt'
+              srcLang='en'
+              label='English'
+            />
+            <source src='video_file.mp4' type='video/mp4' />
+            Your browser does not support the video tag.
+          </video>
+        )}
+      </div>
+
+      {author && (
+        <em>
+          Written by <strong>{author}</strong>
+        </em>
+      )}
+      <p>
+        <small>
+          Published:{' '}
+          {createdAt ? format(new Date(createdAt), 'PPpp') : 'Unknown'}
+        </small>
+      </p>
+
+      <div className='post-footer'>
+        <button className='like-button' onClick={() => handleLike(postId)}>
+          Like {likeCount > 0 && `(${likeCount})`}
+        </button>
+        <button className='share-button' onClick={() => handleShare(postId)}>
+          Share
+        </button>
+      </div>
+
+      <EditPostButton
+        postId={postId}
+        currentTitle={title}
+        currentContents={contents}
+      />
+      <DeletePostButton postId={postId} />
+    </article>
+  )
+}
+
+Post.propTypes = {
+  title: PropTypes.string.isRequired,
+  contents: PropTypes.string,
+  author: PropTypes.string,
+  postId: PropTypes.string.isRequired,
+  createdAt: PropTypes.string,
+  imageUrl: PropTypes.string,
+  videoUrl: PropTypes.string,
+  initialLikeCount: PropTypes.number, // For the initial like count
+}
+import PropTypes from 'prop-types'
+
+export function PostFilter({ field, value, onChange }) {
+  return (
+    <div>
+      <label htmlFor={`filter-${field}`}>{field}: </label>
+      <input
+        type='text'
+        name={`filter-${field}`}
+        id={`filter-${field}`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  )
+}
+
+PostFilter.propTypes = {
+  field: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+}
+/* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* Container for Blog Posts */
+.post-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Individual Post Card */
+.post {
+  background-color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.post:hover {
+  transform: translateY(-5px);
+}
+
+/* Title Styling */
+.post h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Content Styling */
+.post-content {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Subheadings */
+.post h3,
+.post h4 {
+  font-size: 1.5rem;
+  color: #444;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Footer Styling */
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  font-size: 0.875rem;
+  color: #777;
+}
+
+.post-footer span {
+  margin-right: 15px;
+}
+
+/* Author & Date Styling */
+.post-author,
+.post-date {
+  font-style: italic;
+}
+
+/* Button Styles */
+.delete-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #d32f2f;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+  .post-list-container {
+    padding: 10px;
+  }
+
+  .post {
+    padding: 15px;
+  }
+
+  .post h2 {
+    font-size: 1.5rem;
+  }
+
+  .post-content {
+    font-size: 0.9rem;
+  }
+
+  /* Ensure subheadings are readable on smaller screens */
+  .post h3,
+  .post h4 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Content Styling */
+.post-content {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+  white-space: pre-wrap; /* Preserve white spaces and line breaks */
+}
+
+/* Image Styling */
+.post-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+/* Video Styling */
+.post-media video {
+  display: block;
+  margin: 15px auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid-based Layout */
+.post-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Like and Share Buttons */
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.like-button,
+.share-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.like-button:hover {
+  background-color: #0056b3;
+}
+
+.share-button:hover {
+  background-color: #004085;
+}
+
+/* Contact List Styling */
+.contact-list {
+  margin-bottom: 20px;
+  padding: 0;
+  list-style: none;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.contact-list li {
+  margin: 5px 0;
+}
+
+.contact-list a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.contact-list a:hover {
+  text-decoration: underline;
+}
+import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { Post } from './Post.jsx'
+import './PostList.css'
+
+export function PostList({ posts = [] }) {
+  const [allPosts, setAllPosts] = useState(posts)
+
+  // Update posts on like or share action
+  const updatePost = (updatedPost) => {
+    setAllPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === updatedPost._id ? updatedPost : post,
+      ),
+    )
+  }
+
+  useEffect(() => {
+    setAllPosts(posts)
+  }, [posts])
+
+  return (
+    <div className='post-list-container'>
+      <div className='contact-list'>
+        <h3>Unordered List</h3>
+        <ul>
+          {allPosts.map(({ _id, title }) => (
+            <li key={_id}>
+              <a href={`#post${_id}`}>{title}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {allPosts.map(
+        ({
+          _id,
+          createdAt,
+          title,
+          contents,
+          author,
+          imageUrl,
+          videoUrl,
+          likeCount,
+        }) => (
+          <React.Fragment key={_id}>
+            <div id={`post${_id}`} className='post'>
+              <Post
+                title={title}
+                contents={contents}
+                author={author}
+                postId={_id}
+                createdAt={createdAt}
+                imageUrl={imageUrl}
+                videoUrl={videoUrl}
+                initialLikeCount={likeCount} // Pass likeCount as initialLikeCount
+                updatePost={updatePost} // Passing the update function to Post
+              />
+              <hr />
+            </div>
+          </React.Fragment>
+        ),
+      )}
+    </div>
+  )
+}
+
+PostList.propTypes = {
+  posts: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      contents: PropTypes.string,
+      author: PropTypes.string,
+      createdAt: PropTypes.string,
+      imageUrl: PropTypes.string,
+      videoUrl: PropTypes.string,
+      likeCount: PropTypes.number,
+    }),
+  ).isRequired,
+}
+import PropTypes from 'prop-types'
+
+export function PostSorting({
+  fields = [],
+  value,
+  onChange,
+  orderValue,
+  onOrderChange,
+}) {
+  return (
+    <div>
+      <label htmlFor='sortBy'>Sort By: </label>
+      <select
+        name='sortBy'
+        id='sortBy'
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {fields.map((field) => (
+          <option key={field} value={field}>
+            {field}
+          </option>
+        ))}
+      </select>
+      {' / '}
+      <label htmlFor='sortOrder'>Sort Order: </label>
+      <select
+        name='sortOrder'
+        id='sortOrder'
+        value={orderValue}
+        onChange={(e) => onOrderChange(e.target.value)}
+      >
+        <option value={'ascending'}>ascending</option>
+        <option value={'descending'}>descending</option>
+      </select>
+    </div>
+  )
+}
+
+PostSorting.propTypes = {
+  fields: PropTypes.arrayOf(PropTypes.string).isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  orderValue: PropTypes.string.isRequired,
+  onOrderChange: PropTypes.func.isRequired,
+}
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Blog } from './Blog.jsx'
+
+const queryClient = new QueryClient()
+
+export function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Blog />
+    </QueryClientProvider>
+  )
+}
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { PostList } from './components/PostList.jsx'
+import { CreatePost } from './components/CreatePost.jsx'
+import { PostFilter } from './components/PostFilter.jsx'
+import { PostSorting } from './components/PostSorting.jsx'
+import { getPosts } from './api/posts.js'
+
+export function Blog() {
+  const [author, setAuthor] = useState('')
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortOrder, setSortOrder] = useState('descending')
+
+  const postsQuery = useQuery({
+    queryKey: ['posts', { author, sortBy, sortOrder }],
+    queryFn: () => getPosts({ author, sortBy, sortOrder }),
+  })
+  const posts = postsQuery.data ?? []
+
+  return (
+    <div style={{ padding: 8 }}>
+      <CreatePost />
+      <br />
+      <hr />
+      Filter by:
+      <PostFilter
+        field='author'
+        value={author}
+        onChange={(value) => setAuthor(value)}
+      />
+      <br />
+      <PostSorting
+        fields={['createdAt', 'updatedAt']}
+        value={sortBy}
+        onChange={(value) => setSortBy(value)}
+        orderValue={sortOrder}
+        onOrderChange={(orderValue) => setSortOrder(orderValue)}
+      />
+      <hr />
+      <PostList posts={posts} />
+    </div>
+  )
+}
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { App } from './App.jsx'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+FROM node:20 AS build
+ARG VITE_BACKEND_URL=http://localhost:3001/api/v1
+WORKDIR /build
+COPY package.json .
+COPY package-lock.json .
+RUN npm install
+COPY . .
+RUN npm run build
+
+FROM nginx AS final
+WORKDIR /usr/share/nginx/html
+COPY --from=build /build/dist .

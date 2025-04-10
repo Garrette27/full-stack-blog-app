@@ -1,11 +1,26 @@
 /* General Styles */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
+  background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a1c4fd);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
   color: #333;
   margin: 0;
   padding: 0;
   line-height: 1.6;
+}
+
+/* Animated Background Keyframes */
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Container for Blog Posts */
@@ -41,6 +56,7 @@ body {
   font-size: 1rem;
   color: #555;
   line-height: 1.6;
+  white-space: pre-wrap; /* Preserve white spaces and line breaks */
 }
 
 /* Subheadings */
@@ -111,14 +127,6 @@ body {
   .post h4 {
     font-size: 1.2rem;
   }
-}
-
-/* Content Styling */
-.post-content {
-  font-size: 1rem;
-  color: #555;
-  line-height: 1.6;
-  white-space: pre-wrap; /* Preserve white spaces and line breaks */
 }
 
 /* Image Styling */

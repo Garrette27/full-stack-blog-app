@@ -1,8 +1,22 @@
-/* Animated gradient background for the entire page */
+/* Animated and colorful gradient background for the entire page */
 body {
-  background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a1c4fd);
+  font-family: Arial, sans-serif;
+  background: linear-gradient(
+    -45deg,
+    #ff9a9e,
+    #fad0c4,
+    #fbc2eb,
+    #a1c4fd,
+    #ffb6c1,
+    #ffa07a,
+    #20b2aa,
+    #87cefa
+  );
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
 /* Keyframes for background animation */
@@ -21,7 +35,15 @@ body {
 /* Container styling */
 .container {
   margin: 2rem;
-  font-family: Arial, sans-serif;
+  padding: 2rem;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  ); /* slight transparency for layering */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Form layout */
@@ -29,16 +51,19 @@ body {
   display: flex;
   justify-content: space-between;
   gap: 2rem;
-  flex-wrap: wrap; /* This will ensure that on smaller screens the columns stack properly */
+  flex-wrap: wrap; /* Ensure columns stack on smaller screens */
 }
 
 /* Post Details Section and Additional Form Section */
-.post-details,
+.post-details {
+  flex: 1;
+}
 
 /* Labels and inputs */
 label {
   font-weight: bold;
   margin-bottom: 0.5rem;
+  display: block;
 }
 
 input,
@@ -53,8 +78,8 @@ textarea {
 /* Ensure the textarea has the correct height */
 textarea {
   resize: vertical;
-  min-height: 100px; /* Give the textarea a minimum height */
-  background-color: lightyellow; /* Temporary styling */
+  min-height: 100px;
+  background-color: lightyellow;
 }
 
 /* Buttons */
@@ -67,6 +92,7 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {

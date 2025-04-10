@@ -1,13 +1,24 @@
 /* General Styles */
 body {
   font-family: 'Arial', sans-serif;
-  background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a1c4fd);
+  background: linear-gradient(
+    -45deg,
+    #ff9a9e,
+    #fad0c4,
+    #fbc2eb,
+    #a1c4fd,
+    #ffb6c1,
+    #ffa07a,
+    #20b2aa,
+    #87cefa
+  );
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
   color: #333;
   margin: 0;
   padding: 0;
   line-height: 1.6;
+  height: 100vh;
 }
 
 /* Animated Background Keyframes */

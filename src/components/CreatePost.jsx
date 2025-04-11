@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createPost } from '../api/posts.js'
-import './CreatePost1.css' // Make sure the path is correct
+import './CreatePost1.css'
+import { useAuth } from '../contexts/AuthContext.jsx'
 
 export function CreatePost() {
+  const [token] = useAuth()
   const queryClient = useQueryClient()
+
   const createPostMutation = useMutation({
-    mutationFn: (formData) => createPost(formData),
+    mutationFn: (formData) => createPost(token, formData),
     onSuccess: () => queryClient.invalidateQueries(['posts']),
   })
 
@@ -16,9 +19,15 @@ export function CreatePost() {
       title: formData.get('title'),
       author: formData.get('author'),
       contents: formData.get('contents'),
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      birthDate: formData.get('birthDate'),
+      email: formData.get('email'),
     }
     createPostMutation.mutate(data)
   }
+
+  if (!token) return <div>Please log in to create new posts.</div>
 
   return (
     <div className='container'>
@@ -27,15 +36,15 @@ export function CreatePost() {
         <div className='post-details'>
           <div>
             <label htmlFor='title'>Title:</label>
-            <input type='text' id='title' name='title' />
+            <input type='text' id='title' name='title' required />
           </div>
           <div>
             <label htmlFor='author'>Author:</label>
-            <input type='text' id='author' name='author' />
+            <input type='text' id='author' name='author' required />
           </div>
           <div>
             <label htmlFor='contents'>Contents:</label>
-            <textarea id='contents' name='contents'></textarea>
+            <textarea id='contents' name='contents' required></textarea>
           </div>
           <button type='submit'>
             {createPostMutation.isPending ? 'Creating...' : 'Create'}
@@ -47,7 +56,7 @@ export function CreatePost() {
           style={{
             flex: '1 1 45%',
             display: 'grid',
-            gridTemplateColumns: '1fr', // Single column layout
+            gridTemplateColumns: '1fr',
             gap: '1rem',
             minWidth: '300px',
           }}
@@ -144,18 +153,18 @@ export function CreatePost() {
               cursor: 'pointer',
               fontSize: '1rem',
             }}
+            disabled={createPostMutation.isPending}
           >
-            Send
+            {createPostMutation.isPending ? 'Creating...' : 'Send'}
           </button>
         </div>
       </form>
 
-      {createPostMutation.isSuccess ? (
-        <>
-          <br />
+      {createPostMutation.isSuccess && (
+        <div style={{ marginTop: '1rem', color: 'green' }}>
           Post created successfully!
-        </>
-      ) : null}
+        </div>
+      )}
     </div>
   )
 }

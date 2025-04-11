@@ -23,10 +23,13 @@ export const getPosts = async (queryParams) => {
  * @param {Object} post - Post data.
  * @returns {Promise<Object>} - Created post data.
  */
-export const createPost = async (post) => {
+export const createPost = async (token, post) => {
   const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ${token}',
+    },
     body: JSON.stringify(post),
   })
 

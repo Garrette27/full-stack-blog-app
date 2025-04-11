@@ -3,6 +3,7 @@ import { format } from 'date-fns'
 import { likePost, sharePost } from '../api/posts.js'
 import { useState, useEffect } from 'react'
 import { DeletePostButton } from './DeletePostButton'
+import { User } from './User.jsx'
 import { EditPostButton } from './EditPostButton'
 
 export function Post({
@@ -15,13 +16,12 @@ export function Post({
   videoUrl,
   initialLikeCount, // Assuming you pass the initial like count
 }) {
-  // State to hold like count
   const [likeCount, setLikeCount] = useState(initialLikeCount)
 
   const handleLike = async (id) => {
     try {
       const updatedPost = await likePost(id)
-      setLikeCount(updatedPost.likeCount) // Assuming `likeCount` is updated in the response
+      setLikeCount(updatedPost.likeCount)
       alert('Post liked successfully!')
     } catch (error) {
       alert('Failed to like post. Please try again.')
@@ -37,14 +37,12 @@ export function Post({
     }
   }
 
-  // Function to detect and embed an image
   const embedImage = (url) => {
     return /\.(jpeg|jpg|gif|png|bmp|webp)$/i.test(url) ? (
       <img src={url} alt='Embedded content' className='post-image' />
     ) : null
   }
 
-  // Function to detect and embed a YouTube video
   const embedVideo = (url) => {
     const youtubeRegex =
       /https:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/
@@ -66,13 +64,11 @@ export function Post({
     return null
   }
 
-  // Function to parse the content and embed images/videos automatically
   const parseContentWithEmbeds = (content) => {
     const urlRegex = /https?:\/\/[^\s]+/g
     const urls = content.match(urlRegex)
     if (urls) {
       return urls.map((url, index) => {
-        // Check if the URL is an image or a video
         const image = embedImage(url)
         const video = embedVideo(url)
 
@@ -85,13 +81,12 @@ export function Post({
           <a key={index} href={url} target='_blank' rel='noopener noreferrer'>
             {url}
           </a>
-        ) // If it's a link, return it as a clickable URL
+        )
       })
     }
-    return content // If no URLs, just return the content as is
+    return content
   }
 
-  // Use Effect to handle changes to like count on initial load
   useEffect(() => {
     if (initialLikeCount !== undefined) {
       setLikeCount(initialLikeCount)
@@ -105,8 +100,7 @@ export function Post({
       </div>
 
       <div className='post-content'>
-        {parseContentWithEmbeds(contents)}{' '}
-        {/* This is where the embedding happens */}
+        {parseContentWithEmbeds(contents)}
         {imageUrl && <img src={imageUrl} alt={title} className='post-image' />}
         {videoUrl && (
           <video controls>
@@ -124,7 +118,7 @@ export function Post({
 
       {author && (
         <em>
-          Written by <strong>{author}</strong>
+          Written by <User id={author} />
         </em>
       )}
       <p>
@@ -161,5 +155,5 @@ Post.propTypes = {
   createdAt: PropTypes.string,
   imageUrl: PropTypes.string,
   videoUrl: PropTypes.string,
-  initialLikeCount: PropTypes.number, // For the initial like count
+  initialLikeCount: PropTypes.number,
 }

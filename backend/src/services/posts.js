@@ -94,12 +94,149 @@ export async function listPostsByTagAndUser(tag, userId, options) {
   return await listPosts({ tags: tag, author: userId }, options)
 }
 
+// Mock posts data including the Web Fundamentals post
+const mockPosts = [
+  {
+    _id: '6716103bcf3166fd2c1b0a95',
+    title: 'Hello Mongoose!',
+    author: 'Daniel Bugl',
+    contents: 'This post is stored in a MongoDB database using Mongoose.',
+    tags: ['mongoose', 'mongodb'],
+    createdAt: new Date('2024-10-21T08:26:35.02Z'),
+    updatedAt: new Date('2024-10-21T08:26:35.02Z'),
+    likes: 12,
+    shares: 5
+  },
+  {
+    _id: '6716113f5b8ddf26feb4c269',
+    title: 'Hello again, Mongoose!',
+    author: 'Daniel Bugl',
+    contents: 'This post is stored in a MongoDB database using Mongoose.',
+    tags: ['mongoose', 'mongodb'],
+    createdAt: new Date('2024-10-21T08:30:55.831Z'),
+    updatedAt: new Date('2024-10-21T08:30:55.875Z'),
+    likes: 8,
+    shares: 3
+  },
+  {
+    _id: 'web-fundamentals-001',
+    title: 'Web Fundamentals',
+    author: 'Erika Prianes',
+    contents: `# Web Fundamentals
+
+## Introduction
+Web development is the process of building websites and web applications that run on the internet or intranet. It involves creating the visual and interactive elements that users see and interact with, as well as the server-side logic that powers the application.
+
+## Key Technologies
+
+### HTML (HyperText Markup Language)
+HTML is the foundation of web development. It provides the structure and content of web pages using elements and tags.
+
+**Basic HTML Structure:**
+\`\`\`html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Web Page</title>
+</head>
+<body>
+    <h1>Welcome to Web Development</h1>
+    <p>This is a paragraph of text.</p>
+</body>
+</html>
+\`\`\`
+
+### CSS (Cascading Style Sheets)
+CSS is used to style and layout web pages. It controls the appearance of HTML elements.
+
+**Basic CSS Example:**
+\`\`\`css
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+\`\`\`
+
+### JavaScript
+JavaScript is a programming language that adds interactivity and dynamic behavior to web pages.
+
+**Basic JavaScript Example:**
+\`\`\`javascript
+function greetUser(name) {
+    alert('Hello, ' + name + '!');
+}
+
+// Event listener
+document.getElementById('myButton').addEventListener('click', function() {
+    greetUser('World');
+});
+\`\`\`
+
+## Modern Web Development
+
+### Frontend Frameworks
+- **React**: A JavaScript library for building user interfaces
+- **Vue.js**: A progressive framework for building UIs
+- **Angular**: A platform for building mobile and desktop web applications
+
+### Backend Technologies
+- **Node.js**: JavaScript runtime for server-side development
+- **Python**: With frameworks like Django and Flask
+- **PHP**: Popular for web development
+- **Java**: With Spring framework
+
+### Databases
+- **MongoDB**: NoSQL document database
+- **MySQL**: Relational database management system
+- **PostgreSQL**: Advanced open-source relational database
+
+## Best Practices
+
+1. **Responsive Design**: Ensure your website works on all devices
+2. **Performance Optimization**: Minimize load times and optimize assets
+3. **Security**: Implement proper authentication and data validation
+4. **Accessibility**: Make your website usable for everyone
+5. **SEO**: Optimize for search engines
+
+## Conclusion
+Web development is a constantly evolving field that requires continuous learning. By mastering the fundamentals of HTML, CSS, and JavaScript, you'll have a solid foundation to build upon as you explore more advanced technologies and frameworks.
+
+Remember: The best way to learn web development is by building projects and practicing regularly!`,
+    tags: ['web-development', 'html', 'css', 'javascript', 'fundamentals'],
+    createdAt: new Date('2024-10-20T10:00:00.000Z'),
+    updatedAt: new Date('2024-10-20T10:00:00.000Z'),
+    likes: 25,
+    shares: 12
+  }
+]
+
 // New function to get both existing posts (public) and user's own posts
 export async function listPostsWithExisting(userId, options) {
   // Check if database is connected
   if (!mongoose.connection.readyState) {
-    console.log('Database not connected, returning empty array')
-    return []
+    console.log('Database not connected, using mock data')
+    
+    // Return mock posts when database is not available
+    let sortedPosts = [...mockPosts]
+    if (options.sortBy) {
+      const sortOrder = options.sortOrder === 'ascending' ? 1 : -1
+      sortedPosts.sort((a, b) => {
+        const aValue = a[options.sortBy]
+        const bValue = b[options.sortBy]
+        if (aValue < bValue) return -1 * sortOrder
+        if (aValue > bValue) return 1 * sortOrder
+        return 0
+      })
+    }
+    
+    return sortedPosts
   }
 
   try {
@@ -125,13 +262,17 @@ export async function listPostsWithExisting(userId, options) {
     return sortedPosts
   } catch (error) {
     console.error('Error fetching posts from database:', error)
-    return []
+    // Fallback to mock data
+    return mockPosts
   }
 }
 
 export async function getPostById(postId) {
   if (!mongoose.connection.readyState) {
-    throw new Error('Database not connected')
+    // Use mock data when database is not connected
+    const post = mockPosts.find(p => p._id === postId)
+    if (!post) throw new Error('Post not found')
+    return post
   }
   
   const post = await Post.findById(postId).populate('author', 'username email')

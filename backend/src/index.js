@@ -12,7 +12,7 @@ const startServer = async () => {
       console.info(`✅ Express server running on http://0.0.0.0:${PORT}`)
     })
   } catch (err) {
-    console.error('error connecting to database:', err)
+    console.error('error starting server:', err)
     process.exit(1)
   }
 }

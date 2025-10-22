@@ -1,4 +1,5 @@
 // postsAPI.js
+import { getBackendUrl } from '../config.js'
 
 /**
  * Fetch all posts with optional query parameters.
@@ -6,7 +7,7 @@
  * @returns {Promise<Array>} - List of posts.
  */
 export const getPosts = async (queryParams) => {
-  const url = new URL(`${import.meta.env.VITE_BACKEND_URL}/posts`)
+  const url = new URL(`${getBackendUrl()}/posts`)
   if (queryParams) {
     Object.entries(queryParams).forEach(([key, value]) =>
       url.searchParams.append(key, value),
@@ -24,7 +25,7 @@ export const getPosts = async (queryParams) => {
  * @returns {Promise<Object>} - Created post data.
  */
 export const createPost = async (token, post) => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/posts`, {
+  const res = await fetch(`${getBackendUrl()}/posts`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -44,7 +45,7 @@ export const createPost = async (token, post) => {
  */
 export const deletePost = async (postId) => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/posts/${postId}`,
+    `${getBackendUrl()}/posts/${postId}`,
     {
       method: 'DELETE',
     },
@@ -62,7 +63,7 @@ export const deletePost = async (postId) => {
  */
 export const updatePost = async (postId, updatedPost) => {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/posts/${postId}`,
+    `${getBackendUrl()}/posts/${postId}`,
     {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -83,7 +84,7 @@ export const likePost = async (postId) => {
   if (!postId) throw new Error('Invalid post ID')
 
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/posts/${postId}/like`, // Remove extra '/api/v1'
+    `${getBackendUrl()}/posts/${postId}/like`, // Remove extra '/api/v1'
     {
       method: 'PATCH',
     },
@@ -98,7 +99,7 @@ export const sharePost = async (postId) => {
   if (!postId) throw new Error('Invalid post ID')
 
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}/posts/${postId}/share`, // Remove extra '/api/v1'
+    `${getBackendUrl()}/posts/${postId}/share`, // Remove extra '/api/v1'
     {
       method: 'PATCH',
     },

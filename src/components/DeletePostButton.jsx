@@ -1,10 +1,12 @@
 import { useMutation } from '@tanstack/react-query'
 import { deletePost } from '../api/posts.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import PropTypes from 'prop-types' // Import PropTypes
 
 export function DeletePostButton({ postId }) {
+  const [token] = useAuth()
   const deletePostMutation = useMutation({
-    mutationFn: () => deletePost(postId),
+    mutationFn: () => deletePost(token, postId),
     onSuccess: () => {
       alert('Post deleted successfully')
     },

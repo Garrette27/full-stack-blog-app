@@ -2,9 +2,11 @@ import PropTypes from 'prop-types'
 import { format } from 'date-fns'
 import { likePost, sharePost } from '../api/posts.js'
 import { useState, useEffect } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { DeletePostButton } from './DeletePostButton'
 import { User } from './User.jsx'
 import { EditPostButton } from './EditPostButton'
+import { postTrackEvent } from '../api/events.js'
 
 export function Post({
   title,
@@ -15,13 +17,42 @@ export function Post({
   imageUrl,
   videoUrl,
   initialLikeCount, // Assuming you pass the initial like count
+  currentUserId, // Add this to determine if user can edit/delete
 }) {
   const [likeCount, setLikeCount] = useState(initialLikeCount)
+  const [session, setSession] = useState()
+  const trackEventMutation = useMutation({
+    mutationFn: (action) => postTrackEvent({ postId, action, session }),
+    onSuccess: (data) => setSession(data?.session),
+  })
+
+  // Determine if the post can be edited/deleted
+  const canEditDelete = () => {
+    // If no current user, can't edit/delete
+    if (!currentUserId) return false
+    
+    // If no author info, can't edit/delete (shouldn't happen but safety check)
+    if (!author) return false
+    
+    // Check if this is the user's own post
+    const isOwnPost = author === currentUserId
+    
+    // Check if this is an existing post (created before today)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const postDate = new Date(createdAt)
+    const isExistingPost = postDate < today
+    
+    // Can edit/delete only if it's the user's own post AND not an existing post
+    return isOwnPost && !isExistingPost
+  }
 
   const handleLike = async (id) => {
     try {
       const updatedPost = await likePost(id)
-      setLikeCount(updatedPost.likeCount)
+      setLikeCount(updatedPost.likes)
+      // Also track a like event for analytics
+      trackEventMutation.mutate('like')
       alert('Post liked successfully!')
     } catch (error) {
       alert('Failed to like post. Please try again.')
@@ -93,6 +124,17 @@ export function Post({
     }
   }, [initialLikeCount])
 
+  useEffect(() => {
+    let timeout = setTimeout(() => {
+      trackEventMutation.mutate('startView')
+      timeout = null
+    }, 1000)
+    return () => {
+      if (timeout) clearTimeout(timeout)
+      else trackEventMutation.mutate('endView')
+    }
+  }, [])
+
   return (
     <article className='post'>
       <div className='post-header'>
@@ -137,12 +179,16 @@ export function Post({
         </button>
       </div>
 
-      <EditPostButton
-        postId={postId}
-        currentTitle={title}
-        currentContents={contents}
-      />
-      <DeletePostButton postId={postId} />
+      {canEditDelete() && (
+        <>
+          <EditPostButton
+            postId={postId}
+            currentTitle={title}
+            currentContents={contents}
+          />
+          <DeletePostButton postId={postId} />
+        </>
+      )}
     </article>
   )
 }
@@ -156,4 +202,5 @@ Post.propTypes = {
   imageUrl: PropTypes.string,
   videoUrl: PropTypes.string,
   initialLikeCount: PropTypes.number,
+  currentUserId: PropTypes.string,
 }

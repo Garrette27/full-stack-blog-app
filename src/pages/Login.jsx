@@ -58,6 +58,11 @@ export function Login() {
         value={loginMutation.isPending ? 'Logging in...' : 'Log In'}
         disabled={!username || !password || loginMutation.isPending}
       />
+      <br />
+      <br />
+      <Link to='/forgot-password'>Forgot Password?</Link>
+      <br />
+      <Link to='/signup'>Don't have an account? Sign Up</Link>
     </form>
   )
 }

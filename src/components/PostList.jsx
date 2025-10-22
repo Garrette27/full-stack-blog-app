@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Post } from './Post.jsx'
 import './PostList.css'
 
-export function PostList({ posts = [] }) {
+export function PostList({ posts = [], currentUserId }) {
   const [allPosts, setAllPosts] = useState(posts)
 
   // Update posts on like or share action
@@ -41,7 +41,7 @@ export function PostList({ posts = [] }) {
           author,
           imageUrl,
           videoUrl,
-          likeCount,
+          likes,
         }) => (
           <React.Fragment key={_id}>
             <div id={`post${_id}`} className='post'>
@@ -53,7 +53,8 @@ export function PostList({ posts = [] }) {
                 createdAt={createdAt}
                 imageUrl={imageUrl}
                 videoUrl={videoUrl}
-                initialLikeCount={likeCount} // Pass likeCount as initialLikeCount
+                initialLikeCount={likes} // Pass likes as initialLikeCount
+                currentUserId={currentUserId} // Pass current user ID for edit/delete logic
                 updatePost={updatePost} // Passing the update function to Post
               />
               <hr />
@@ -75,7 +76,8 @@ PostList.propTypes = {
       createdAt: PropTypes.string,
       imageUrl: PropTypes.string,
       videoUrl: PropTypes.string,
-      likeCount: PropTypes.number,
+      likes: PropTypes.number,
     }),
   ).isRequired,
+  currentUserId: PropTypes.string,
 }

@@ -9,7 +9,12 @@ export function CreatePost() {
 
   const createPostMutation = useMutation({
     mutationFn: (formData) => createPost(token, formData),
-    onSuccess: () => queryClient.invalidateQueries(['posts']),
+    onSuccess: () => {
+      // Invalidate all posts queries to force refresh
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      // Also refetch immediately
+      queryClient.refetchQueries({ queryKey: ['posts'] })
+    },
   })
 
   const handleSubmit = (e) => {

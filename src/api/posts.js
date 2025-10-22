@@ -4,9 +4,10 @@ import { getBackendUrl } from '../config.js'
 /**
  * Fetch all posts with optional query parameters.
  * @param {Object} queryParams - Key-value pairs for query parameters.
+ * @param {string} token - Authentication token.
  * @returns {Promise<Array>} - List of posts.
  */
-export const getPosts = async (queryParams) => {
+export const getPosts = async (queryParams, token) => {
   const url = new URL(`${getBackendUrl()}/posts`)
   if (queryParams) {
     Object.entries(queryParams).forEach(([key, value]) =>
@@ -14,7 +15,15 @@ export const getPosts = async (queryParams) => {
     )
   }
 
-  const res = await fetch(url)
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  const res = await fetch(url, { headers })
   if (!res.ok) throw new Error(`Error fetching posts: ${res.statusText}`)
   return await res.json()
 }
@@ -29,7 +38,7 @@ export const createPost = async (token, post) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: 'Bearer ${token}',
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(post),
   })
@@ -41,13 +50,23 @@ export const createPost = async (token, post) => {
 /**
  * Delete a post by ID.
  * @param {string} postId - ID of the post to delete.
+ * @param {string} token - Authentication token.
  * @returns {Promise<boolean>} - Returns true if deletion succeeds.
  */
-export const deletePost = async (postId) => {
+export const deletePost = async (postId, token) => {
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
   const res = await fetch(
     `${getBackendUrl()}/posts/${postId}`,
     {
       method: 'DELETE',
+      headers,
     },
   )
 
@@ -59,14 +78,23 @@ export const deletePost = async (postId) => {
  * Update an existing post by ID.
  * @param {string} postId - ID of the post to update.
  * @param {Object} updatedPost - Updated post data.
+ * @param {string} token - Authentication token.
  * @returns {Promise<Object>} - Updated post data.
  */
-export const updatePost = async (postId, updatedPost) => {
+export const updatePost = async (postId, updatedPost, token) => {
+  const headers = {
+    'Content-Type': 'application/json',
+  }
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
   const res = await fetch(
     `${getBackendUrl()}/posts/${postId}`,
     {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(updatedPost),
     },
   )

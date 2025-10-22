@@ -6,7 +6,7 @@ import PropTypes from 'prop-types' // Import PropTypes
 export function DeletePostButton({ postId }) {
   const [token] = useAuth()
   const deletePostMutation = useMutation({
-    mutationFn: () => deletePost(token, postId),
+    mutationFn: () => deletePost(postId, token),
     onSuccess: () => {
       alert('Post deleted successfully')
     },

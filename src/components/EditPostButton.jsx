@@ -12,7 +12,7 @@ export function EditPostButton({ postId, currentTitle, currentContents }) {
 
   const editPostMutation = useMutation({
     mutationFn: () =>
-      updatePost(token, postId, { title: newTitle, contents: newContents }),
+      updatePost(postId, { title: newTitle, contents: newContents }, token),
     onSuccess: () => {
       alert('Post updated successfully')
       setIsEditing(false)

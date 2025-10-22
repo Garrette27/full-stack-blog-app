@@ -18,7 +18,7 @@ export function Blog() {
 
   const postsQuery = useQuery({
     queryKey: ['posts', { author: userId, sortBy, sortOrder }],
-    queryFn: () => getPosts(token, { sortBy, sortOrder }), // Remove author parameter to let backend handle user filtering
+    queryFn: () => getPosts({ sortBy, sortOrder }, token), // Fix parameter order: queryParams first, then token
     enabled: !!token && !!userId, // Only run query if user is authenticated and userId is available
   })
   const posts = postsQuery.data ?? []

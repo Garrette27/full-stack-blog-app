@@ -23,7 +23,7 @@ export function initDatabase() {
   return mongoose.connect(DATABASE_URL, {
     serverSelectionTimeoutMS: 10000, // 10 seconds timeout
     socketTimeoutMS: 45000, // 45 seconds timeout
-    bufferCommands: false // Disable mongoose buffering
+    bufferCommands: true // Enable mongoose buffering for better connection handling
   }).catch(err => {
     console.error('❌ Failed to connect to database:', err)
     console.warn('⚠️  Continuing without database connection...')

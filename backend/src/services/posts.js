@@ -1,47 +1,37 @@
-// Mock posts service - works without database
-// These are the original posts from your database
-const mockPosts = [
-  {
-    _id: '6716103bcf3166fd2c1b0a95',
-    title: 'Hello Mongoose!',
-    author: 'Daniel Bugl',
-    contents: 'This post is stored in a MongoDB database using Mongoose.',
-    tags: ['mongoose', 'mongodb'],
-    createdAt: new Date('2024-10-21T08:26:35.02Z'),
-    updatedAt: new Date('2024-10-21T08:26:35.02Z'),
-    likes: 12,
-    shares: 5
-  },
-  {
-    _id: '6716113f5b8ddf26feb4c269',
-    title: 'Hello again, Mongoose!',
-    author: 'Daniel Bugl',
-    contents: 'This post is stored in a MongoDB database using Mongoose.',
-    tags: ['mongoose', 'mongodb'],
-    createdAt: new Date('2024-10-21T08:30:55.831Z'),
-    updatedAt: new Date('2024-10-21T08:30:55.875Z'),
-    likes: 8,
-    shares: 3
-  }
-]
+import { Post } from '../db/models/post.js'
+import { User } from '../db/models/user.js'
+import mongoose from 'mongoose'
 
-export async function createPost(userId, { title, contents, tags }) {
-  // Create a new post with mock data
-  const newPost = {
-    _id: `post-${Date.now()}`,
+export async function createPost(userId, { title, contents, tags, author, firstName, lastName, birthDate, email }) {
+  // Check if database is connected
+  if (!mongoose.connection.readyState) {
+    throw new Error('Database not connected')
+  }
+
+  // Find the user
+  const user = await User.findById(userId)
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  // Create a new post
+  const newPost = new Post({
     title: title || 'Untitled',
     author: userId,
     contents: contents || '',
     tags: tags || [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    // Additional fields from the form
+    authorName: author || `${firstName || ''} ${lastName || ''}`.trim() || user.username,
+    firstName: firstName || '',
+    lastName: lastName || '',
+    birthDate: birthDate || null,
+    email: email || user.email,
     likes: 0,
     shares: 0
-  }
+  })
   
-  // In a real app, this would save to database
-  console.log(`Creating post for user ${userId}:`, newPost.title)
-  return newPost
+  const savedPost = await newPost.save()
+  return await Post.findById(savedPost._id).populate('author', 'username email')
 }
 
 async function listPosts(
@@ -106,39 +96,45 @@ export async function listPostsByTagAndUser(tag, userId, options) {
 
 // New function to get both existing posts (public) and user's own posts
 export async function listPostsWithExisting(userId, options) {
-  // Get all existing posts (created before today) - these are public
-  const today = new Date()
-  today.setHours(0, 0, 0, 0) // Start of today
-  
-  // Filter existing posts (created before today)
-  const existingPosts = mockPosts.filter(post => {
-    const postDate = new Date(post.createdAt)
-    return postDate < today
-  })
-  
-  // For now, we'll just return the existing posts since we don't have user-specific posts yet
-  // In a real implementation, you would also fetch user's own posts created today or later
-  
-  console.log(`Getting posts for user: ${userId}`)
-  console.log(`Found ${existingPosts.length} existing posts`)
-  
-  // Sort the posts according to options
-  if (options.sortBy) {
-    const sortOrder = options.sortOrder === 'ascending' ? 1 : -1
-    existingPosts.sort((a, b) => {
-      const aValue = a[options.sortBy]
-      const bValue = b[options.sortBy]
-      if (aValue < bValue) return -1 * sortOrder
-      if (aValue > bValue) return 1 * sortOrder
-      return 0
-    })
+  // Check if database is connected
+  if (!mongoose.connection.readyState) {
+    console.log('Database not connected, returning empty array')
+    return []
   }
-  
-  return existingPosts
+
+  try {
+    // Get all posts from the database
+    const allPosts = await Post.find({}).populate('author', 'username email')
+    
+    console.log(`Getting posts for user: ${userId}`)
+    console.log(`Found ${allPosts.length} total posts in database`)
+    
+    // Sort the posts according to options
+    let sortedPosts = [...allPosts]
+    if (options.sortBy) {
+      const sortOrder = options.sortOrder === 'ascending' ? 1 : -1
+      sortedPosts.sort((a, b) => {
+        const aValue = a[options.sortBy]
+        const bValue = b[options.sortBy]
+        if (aValue < bValue) return -1 * sortOrder
+        if (aValue > bValue) return 1 * sortOrder
+        return 0
+      })
+    }
+    
+    return sortedPosts
+  } catch (error) {
+    console.error('Error fetching posts from database:', error)
+    return []
+  }
 }
 
 export async function getPostById(postId) {
-  const post = mockPosts.find(p => p._id === postId)
+  if (!mongoose.connection.readyState) {
+    throw new Error('Database not connected')
+  }
+  
+  const post = await Post.findById(postId).populate('author', 'username email')
   if (!post) throw new Error('Post not found')
   return post
 }
@@ -199,17 +195,27 @@ export async function deletePost(userId, postId) {
 }
 
 export async function likePost(postId) {
-  const post = mockPosts.find(p => p._id === postId)
+  if (!mongoose.connection.readyState) {
+    throw new Error('Database not connected')
+  }
+  
+  const post = await Post.findById(postId)
   if (!post) throw new Error('Post not found')
 
   post.likes = (post.likes || 0) + 1
-  return post
+  await post.save()
+  return await Post.findById(postId).populate('author', 'username email')
 }
 
 export async function sharePost(postId) {
-  const post = mockPosts.find(p => p._id === postId)
+  if (!mongoose.connection.readyState) {
+    throw new Error('Database not connected')
+  }
+  
+  const post = await Post.findById(postId)
   if (!post) throw new Error('Post not found')
 
   post.shares = (post.shares || 0) + 1
-  return post
+  await post.save()
+  return await Post.findById(postId).populate('author', 'username email')
 }

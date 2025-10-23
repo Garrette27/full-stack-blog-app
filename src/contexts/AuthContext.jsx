@@ -8,7 +8,9 @@ export const AuthContext = createContext({
 })
 
 export const AuthContextProvider = ({ children }) => {
-  const [token, setToken] = useState(null)
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem('token')
+  })
   
   // Extract userId from token if it exists
   const getUserIdFromToken = (token) => {
@@ -25,8 +27,18 @@ export const AuthContextProvider = ({ children }) => {
   
   const userId = getUserIdFromToken(token)
   
+  // Enhanced setToken that also updates localStorage
+  const setTokenWithStorage = (newToken) => {
+    if (newToken) {
+      localStorage.setItem('token', newToken)
+    } else {
+      localStorage.removeItem('token')
+    }
+    setToken(newToken)
+  }
+  
   return (
-    <AuthContext.Provider value={{ token, setToken, userId }}>
+    <AuthContext.Provider value={{ token, setToken: setTokenWithStorage, userId }}>
       {children}
     </AuthContext.Provider>
   )

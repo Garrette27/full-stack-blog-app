@@ -160,7 +160,7 @@ export function Post({
 
       {author && (
         <em>
-          Written by <User id={author} />
+          Written by <User id={typeof author === 'object' ? author._id : author} />
         </em>
       )}
       <p>

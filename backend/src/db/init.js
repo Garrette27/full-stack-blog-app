@@ -11,6 +11,7 @@ export function initDatabase() {
   }
   
   console.log('Connecting to database...')
+  console.log('DATABASE_URL:', DATABASE_URL.replace(/\/\/[^:]+:[^@]+@/, '//***:***@')) // Log URL with credentials hidden
   
   mongoose.connection.on('open', () => {
     console.info('✅ Successfully connected to database')
@@ -23,7 +24,11 @@ export function initDatabase() {
   return mongoose.connect(DATABASE_URL, {
     serverSelectionTimeoutMS: 10000, // 10 seconds timeout
     socketTimeoutMS: 45000, // 45 seconds timeout
-    bufferCommands: true // Enable mongoose buffering for better connection handling
+    bufferCommands: true, // Enable mongoose buffering for better connection handling
+    maxPoolSize: 10, // Maintain up to 10 socket connections
+    minPoolSize: 5, // Maintain a minimum of 5 socket connections
+    maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
+    connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
   }).catch(err => {
     console.error('❌ Failed to connect to database:', err)
     console.warn('⚠️  Continuing without database connection...')

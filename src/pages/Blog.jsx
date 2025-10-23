@@ -14,7 +14,7 @@ export function Blog() {
   const [sortOrder, setSortOrder] = useState('descending')
   const [showStats, setShowStats] = useState(false)
   const [selectedPostId, setSelectedPostId] = useState(null)
-  const [token, , , userId] = useAuth()
+  const [token, setToken, , userId] = useAuth()
 
   const postsQuery = useQuery({
     queryKey: ['posts', { author: userId, sortBy, sortOrder }],
@@ -34,6 +34,35 @@ export function Blog() {
         <div style={{ textAlign: 'center', padding: '40px' }}>
           <h2>Welcome to the Blog!</h2>
           <p>Please log in to view and manage your blog posts.</p>
+          <button 
+            onClick={async () => {
+              try {
+                const response = await fetch('https://blog-backend-1058054107417-1058054107417.asia-east1.run.app/api/v1/user/login', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ username: 'mock-user', password: 'mock-password' })
+                })
+                const data = await response.json()
+                if (data.token) {
+                  setToken(data.token)
+                }
+              } catch (error) {
+                console.error('Login error:', error)
+              }
+            }}
+            style={{ 
+              background: '#4CAF50', 
+              color: 'white', 
+              border: 'none', 
+              padding: '10px 20px', 
+              cursor: 'pointer',
+              borderRadius: '4px',
+              fontSize: '16px',
+              marginTop: '20px'
+            }}
+          >
+            Mock Login (Auto-login for demo)
+          </button>
         </div>
       </div>
     )

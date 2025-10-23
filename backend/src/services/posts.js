@@ -240,11 +240,42 @@ export async function listPostsWithExisting(userId, options) {
   }
 
   try {
-    // Get all posts from the database
-    const allPosts = await Post.find({}).populate('author', 'username email')
+    // Get today's date for filtering
+    const today = new Date()
+    today.setHours(0, 0, 0, 0) // Start of today
     
     console.log(`Getting posts for user: ${userId}`)
-    console.log(`Found ${allPosts.length} total posts in database`)
+    console.log(`Today's date: ${today.toISOString()}`)
+    
+    // Get existing posts (created before today) - these are public
+    const existingPosts = await Post.find({ 
+      createdAt: { $lt: today } 
+    }).populate('author', 'username email')
+    
+    // Get user's own posts (created today or later)
+    // Only try to get user posts if userId is a valid ObjectId
+    let userPosts = []
+    try {
+      // Check if userId is a valid ObjectId (24 character hex string)
+      if (userId && userId.length === 24 && /^[0-9a-fA-F]{24}$/.test(userId)) {
+        userPosts = await Post.find({ 
+          author: userId,
+          createdAt: { $gte: today }
+        }).populate('author', 'username email')
+      } else {
+        console.log(`Invalid userId format: ${userId}, skipping user posts`)
+      }
+    } catch (userError) {
+      console.log(`Error fetching user posts for ${userId}:`, userError.message)
+      // Continue without user posts
+    }
+    
+    // Combine both arrays
+    const allPosts = [...existingPosts, ...userPosts]
+    
+    console.log(`Found ${existingPosts.length} existing posts (public)`)
+    console.log(`Found ${userPosts.length} user posts`)
+    console.log(`Total posts: ${allPosts.length}`)
     
     // Sort the posts according to options
     let sortedPosts = [...allPosts]
@@ -281,7 +312,12 @@ export async function getPostById(postId) {
 }
 
 export async function updatePost(userId, postId, { title, contents, tags }) {
-  const post = mockPosts.find(p => p._id === postId)
+  // Check if database is connected
+  if (!mongoose.connection.readyState) {
+    throw new Error('Database not connected')
+  }
+
+  const post = await Post.findById(postId)
   if (!post) throw new Error('Post not found')
   
   // Check if this is an existing post (created before today)
@@ -295,21 +331,27 @@ export async function updatePost(userId, postId, { title, contents, tags }) {
   }
   
   // Only allow editing of user's own posts
-  if (post.author !== userId) {
+  if (post.author.toString() !== userId) {
     throw new Error('Access denied: Can only edit your own posts')
   }
   
-  // Mock update - in real app would save to database
+  // Update the post
   post.title = title || post.title
   post.contents = contents || post.contents
   post.tags = tags || post.tags
   post.updatedAt = new Date()
   
-  return post
+  await post.save()
+  return await Post.findById(postId).populate('author', 'username email')
 }
 
 export async function deletePost(userId, postId) {
-  const post = mockPosts.find(p => p._id === postId)
+  // Check if database is connected
+  if (!mongoose.connection.readyState) {
+    throw new Error('Database not connected')
+  }
+
+  const post = await Post.findById(postId)
   if (!post) return { deletedCount: 0 }
   
   // Check if this is an existing post (created before today)
@@ -323,16 +365,13 @@ export async function deletePost(userId, postId) {
   }
   
   // Only allow deletion of user's own posts
-  if (post.author !== userId) {
+  if (post.author.toString() !== userId) {
     throw new Error('Access denied: Can only delete your own posts')
   }
   
-  const postIndex = mockPosts.findIndex(p => p._id === postId)
-  if (postIndex === -1) return { deletedCount: 0 }
-  
-  // Mock deletion - in real app would remove from database
-  mockPosts.splice(postIndex, 1)
-  return { deletedCount: 1 }
+  // Delete the post from database
+  const result = await Post.deleteOne({ _id: postId })
+  return { deletedCount: result.deletedCount }
 }
 
 export async function likePost(postId) {

@@ -7,16 +7,26 @@ import { initDatabase } from './db/init.js'
 
 const startServer = async () => {
   try {
-    await initDatabase()
-    
-    // Wait a moment for the database connection to be established
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    // Check if database is connected
-    if (mongoose.connection.readyState !== 1) {
-      console.warn('⚠️  Database not connected, but continuing with server startup')
+    console.log('🔄 Initializing database connection...')
+    try {
+      await initDatabase()
+    } catch (e) {
+      console.warn('⚠️  Initial DB connect attempt failed:', e?.message)
+    }
+
+    // Wait briefly for connection readiness; continue even if not connected so the service can start
+    let attempts = 0
+    const maxAttempts = 10
+    while (mongoose.connection.readyState !== 1 && attempts < maxAttempts) {
+      console.log(`⏳ Waiting for database connection... (attempt ${attempts + 1}/${maxAttempts})`)
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      attempts++
+    }
+
+    if (mongoose.connection.readyState === 1) {
+      console.info('✅ Database connection established successfully')
     } else {
-      console.info('✅ Database connection verified')
+      console.warn('⚠️  Database not connected at startup; continuing to serve. /healthz will report 503 until connected.')
     }
     
     const PORT = process.env.PORT || 8080
@@ -24,7 +34,7 @@ const startServer = async () => {
       console.info(`✅ Express server running on http://0.0.0.0:${PORT}`)
     })
   } catch (err) {
-    console.error('error starting server:', err)
+    console.error('❌ Error starting server:', err)
     process.exit(1)
   }
 }

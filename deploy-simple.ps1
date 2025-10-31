@@ -13,7 +13,7 @@ gcloud config set project $PROJECT_ID
 
 # Deploy backend
 Write-Host "🔧 Deploying backend..." -ForegroundColor Yellow
-gcloud run deploy $BACKEND_SERVICE --source=backend/ --region=$REGION --set-env-vars="JWT_SECRET=my-super-secret-jwt-key-2025,DATABASE_URL=mongodb+srv://gjencomienda:Qwerty12345@cluster0.t0o3n.mongodb.net/blog?retryWrites=true&w=majority" --allow-unauthenticated --quiet
+gcloud run deploy $BACKEND_SERVICE --source=backend/ --region=$REGION --set-env-vars="JWT_SECRET=my-super-secret-jwt-key-2025,DATABASE_URL=mongodb+srv://gjencomienda:Qwerty12345@cluster0.t0o3n.mongodb.net/test?retryWrites=true&w=majority" --allow-unauthenticated --quiet
 
 # Get the backend URL
 $BACKEND_URL = gcloud run services describe $BACKEND_SERVICE --region=$REGION --format="value(status.url)"

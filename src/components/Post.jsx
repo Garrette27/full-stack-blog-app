@@ -35,7 +35,8 @@ export function Post({
     if (!author) return false
     
     // Check if this is the user's own post
-    const isOwnPost = author === currentUserId
+    const authorId = typeof author === 'object' ? author._id : author
+    const isOwnPost = authorId === currentUserId
     
     // Check if this is an existing post (created before today)
     const today = new Date()

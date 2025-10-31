@@ -1,11 +1,13 @@
 import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
+import mongoose from 'mongoose'
 
 import { postsRoutes } from './routes/posts.js'
 import { userRoutes } from './routes/users.js'
 import { eventRoutes } from './routes/events.js'
 import { passwordResetRoutes } from './routes/passwordReset.js'
+import { adminRoutes } from './routes/admin.js'
 
 const app = express()
 
@@ -27,10 +29,31 @@ app.use((req, res, next) => {
 app.use(cors(corsOptions))
 app.use(bodyParser.json())
 
+// Health/readiness check
+app.get('/healthz', (req, res) => {
+  const dbReady = mongoose.connection?.readyState === 1
+  const state = {
+    dbReadyState: `${mongoose.connection?.readyState ?? 'n/a'}`,
+    uptime: process.uptime(),
+  }
+  res.status(dbReady ? 200 : 503).json(state)
+})
+
+// Alternate health endpoint under API prefix
+app.get('/api/v1/health', (req, res) => {
+  const dbReady = mongoose.connection?.readyState === 1
+  const state = {
+    dbReadyState: `${mongoose.connection?.readyState ?? 'n/a'}`,
+    uptime: process.uptime(),
+  }
+  res.status(dbReady ? 200 : 503).json(state)
+})
+
 postsRoutes(app)
 userRoutes(app)
 eventRoutes(app)
 passwordResetRoutes(app)
+adminRoutes(app)
 
 app.get('/', (req, res) => {
   res.send('Hello from Express!')

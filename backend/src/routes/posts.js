@@ -6,7 +6,6 @@ import {
   listPostsByTag,
   listPostsByUser,
   listPostsByTagAndUser,
-  listPostsWithExisting,
   getPostById,
   createPost,
   updatePost,
@@ -16,22 +15,14 @@ import { requireAuth } from '../middleware/jwt.js'
 
 export function postsRoutes(app) {
   app.get('/api/v1/posts', requireAuth, async (req, res) => {
+    res.set('Cache-Control', 'private, no-store')
     const { sortBy, sortOrder, author, tag } = req.query
     const options = { sortBy, sortOrder }
-    const userId = req.auth.sub // Get the authenticated user's ID
+    const userKey = req.auth?.username || req.auth?.sub
     
-    console.log('Posts request - User ID:', userId, 'Auth object:', req.auth)
+    console.log('Posts request - User Key:', userKey, 'Auth object:', req.auth)
     console.log('Posts request - Headers:', req.headers.authorization)
     console.log('Posts request - Query params:', req.query)
-    
-    // Set cache control headers to prevent caching
-    res.set({
-      'Cache-Control': 'no-cache, no-store, must-revalidate, private',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-      'Last-Modified': new Date().toUTCString(),
-      'ETag': `"${Date.now()}"`
-    })
     
     try {
       if (author && tag) {
@@ -39,27 +30,22 @@ export function postsRoutes(app) {
           .status(400)
           .json({ error: 'Query by either author or tag, not both' })
       } else if (author) {
-        // Only allow users to filter by their own posts
-        if (author !== userId) {
+        if (author !== userKey) {
           return res.status(403).json({ error: 'Access denied: Can only view your own posts' })
         }
-        const posts = await listPostsByAuthor(author, options)
-        console.log('Posts found for author:', author, 'Count:', posts.length)
+        const posts = await listPostsByUser(author, options)
         return res.json(posts)
       } else if (tag) {
-        // Filter posts by tag but only for the authenticated user
-        const posts = await listPostsByTagAndUser(tag, userId, options)
-        console.log('Posts found for tag:', tag, 'Count:', posts.length)
+        const posts = await listPostsByTagAndUser(tag, userKey, options)
         return res.json(posts)
       } else {
-        // Return existing posts (public) + user's own posts
-        const posts = await listPostsWithExisting(userId, options)
-        console.log('Posts found for user:', userId, 'Count:', posts.length)
+        // Return only posts belonging to the authenticated user
+        const posts = await listPostsByUser(userKey, options)
+        console.log('Posts found for user:', userKey, 'Count:', posts.length)
         return res.json(posts)
       }
     } catch (err) {
       console.error('Error listing posts', err)
-      // Return empty array instead of 500 error for now
       return res.json([])
     }
   })
@@ -78,9 +64,13 @@ export function postsRoutes(app) {
 
   app.post('/api/v1/posts', requireAuth, async (req, res) => {
     try {
-      const post = await createPost(req.auth.sub, req.body)
+      const userKey = req.auth?.username || req.auth?.sub
+      const post = await createPost(userKey, req.body)
       return res.json(post)
     } catch (err) {
+      if (err?.name === 'ValidationError') {
+        return res.status(400).json({ error: err.message })
+      }
       console.error('Error creating post', err)
       return res.status(500).end()
     }
@@ -88,19 +78,8 @@ export function postsRoutes(app) {
 
   app.patch('/api/v1/posts/:id', requireAuth, async (req, res) => {
     try {
-      // Check if this is an existing post (created before today)
-      const existingPost = await getPostById(req.params.id)
-      if (!existingPost) return res.sendStatus(404)
-      
-      const today = new Date()
-      today.setHours(0, 0, 0, 0) // Start of today
-      
-      // Prevent editing of existing posts (created before today)
-      if (existingPost.createdAt < today) {
-        return res.status(403).json({ error: 'Cannot edit existing public posts' })
-      }
-      
-      const post = await updatePost(req.auth.sub, req.params.id, req.body)
+      const userKey = req.auth?.username || req.auth?.sub
+      const post = await updatePost(userKey, req.params.id, req.body)
       return res.json(post)
     } catch (err) {
       console.error('Error updating post', err)
@@ -110,20 +89,8 @@ export function postsRoutes(app) {
 
   app.delete('/api/v1/posts/:id', requireAuth, async (req, res) => {
     try {
-      // Check if this is an existing post (created before today)
-      const post = await getPostById(req.params.id)
-      if (!post) return res.sendStatus(404)
-      
-      const today = new Date()
-      today.setHours(0, 0, 0, 0) // Start of today
-      
-      // Prevent deletion of existing posts (created before today)
-      if (post.createdAt < today) {
-        return res.status(403).json({ error: 'Cannot delete existing public posts' })
-      }
-      
-      // Only allow deletion of user's own posts created today or later
-      const { deletedCount } = await deletePost(req.auth.sub, req.params.id)
+      const userKey = req.auth?.username || req.auth?.sub
+      const { deletedCount } = await deletePost(userKey, req.params.id)
       if (deletedCount === 0) return res.sendStatus(404)
       return res.status(204).end()
     } catch (err) {
@@ -134,18 +101,17 @@ export function postsRoutes(app) {
 
   app.patch('/api/v1/posts/:id/like', async (req, res) => {
     try {
-      const post = await likePost(req.params.id) // Directly call the service to update the like count
+      const post = await likePost(req.params.id)
       return res.json(post)
     } catch (err) {
       console.error('Error liking post:', err.message)
-      console.error('Full error:', err)
       return res.status(500).json({ error: err.message })
     }
   })
 
   app.patch('/api/v1/posts/:id/share', async (req, res) => {
     try {
-      const post = await sharePost(req.params.id) // Directly call the service to update the share count
+      const post = await sharePost(req.params.id)
       return res.json(post)
     } catch (err) {
       console.error('Error sharing post', err)

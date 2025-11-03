@@ -9,24 +9,36 @@ export function Header() {
 
   if (token) {
     const { sub } = jwtDecode(token)
+    console.log('Header rendering with token, showing Dashboard link')
     return (
-      <div>
+      <div
+        style={{
+          border: '1px solid red',
+          padding: '5px',
+          background: '#ffffcc',
+        }}
+      >
+        <strong>DEBUG: Header v2 loaded</strong>
+        <br />
         Logged in as <User id={sub} /> |{' '}
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={() => {
+            console.log('Dashboard button clicked, navigating to /dashboard')
+            navigate('/dashboard')
+          }}
           style={{
-            background: 'transparent',
-            border: 'none',
-            color: '#007bff',
-            textDecoration: 'underline',
+            background: '#007bff',
+            color: 'white',
+            border: '2px solid #0056b3',
             fontWeight: 'bold',
             cursor: 'pointer',
-            padding: '0',
+            padding: '5px 10px',
             marginRight: '10px',
-            fontSize: 'inherit',
+            fontSize: '14px',
+            borderRadius: '4px',
           }}
         >
-          Dashboard
+          🎯 DASHBOARD 🎯
         </button>
         <button onClick={() => setToken(null)}>Logout</button>
       </div>

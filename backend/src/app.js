@@ -8,6 +8,7 @@ import { userRoutes } from './routes/users.js'
 import { eventRoutes } from './routes/events.js'
 import { passwordResetRoutes } from './routes/passwordReset.js'
 import { adminRoutes } from './routes/admin.js'
+import { dashboardRoutes } from './routes/dashboard.js'
 
 const app = express()
 
@@ -17,12 +18,16 @@ const corsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200 // For legacy browser support
+  optionsSuccessStatus: 200, // For legacy browser support
 }
 
 // Log all incoming requests for debugging
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.headers.origin}`)
+  console.log(
+    `${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${
+      req.headers.origin
+    }`,
+  )
   next()
 })
 
@@ -54,6 +59,7 @@ userRoutes(app)
 eventRoutes(app)
 passwordResetRoutes(app)
 adminRoutes(app)
+dashboardRoutes(app)
 
 app.get('/', (req, res) => {
   res.send('Hello from Express!')

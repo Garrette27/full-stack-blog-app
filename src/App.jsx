@@ -5,6 +5,7 @@ import { Signup } from './pages/Signup.jsx'
 import { Login } from './pages/Login.jsx'
 import { ForgotPassword } from './pages/ForgotPassword.jsx'
 import { ResetPassword } from './pages/ResetPassword.jsx'
+import { Dashboard } from './components/Dashboard.jsx'
 import { AuthContextProvider } from './contexts/AuthContext.jsx'
 
 const queryClient = new QueryClient()
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: '/reset-password',
     element: <ResetPassword />,
+  },
+  {
+    path: '/dashboard',
+    element: <Dashboard />,
   },
 ])
 

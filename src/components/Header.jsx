@@ -12,6 +12,9 @@ export function Header() {
       <div>
         Logged in as <User id={sub} />
         <br />
+        <Link to='/dashboard' style={{ marginRight: '10px' }}>
+          Dashboard
+        </Link>
         <button onClick={() => setToken(null)}>Logout</button>
       </div>
     )

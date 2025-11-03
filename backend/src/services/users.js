@@ -9,7 +9,7 @@ export async function createUser({ username, password }) {
   const hashed = await bcrypt.hash(password, 10)
   const user = new User({ username, password: hashed })
   await user.save()
-  return { username }
+  return { username, _id: user._id }
 }
 
 export async function loginUser({ username, password }) {
@@ -20,10 +20,14 @@ export async function loginUser({ username, password }) {
   if (!ok) throw new Error('invalid credentials')
 
   // Use username as stable subject so posts are scoped per account
-  const token = jwt.sign({ sub: username, username }, process.env.JWT_SECRET, {
-    expiresIn: '24h',
-  })
-  return token
+  const token = jwt.sign(
+    { sub: username, username, userId: user._id.toString() },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: '24h',
+    },
+  )
+  return { token, userId: user._id }
 }
 
 export async function getUserInfoById(userId) {

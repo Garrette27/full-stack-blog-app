@@ -10,15 +10,14 @@ export function Header() {
     const { sub } = jwtDecode(token)
     return (
       <div>
-        Logged in as <User id={sub} />
-        <br />
+        Logged in as <User id={sub} /> |{' '}
         <Link
           to='/dashboard'
           style={{
-            marginRight: '10px',
             color: '#007bff',
             textDecoration: 'underline',
             fontWeight: 'bold',
+            marginRight: '10px',
           }}
         >
           Dashboard

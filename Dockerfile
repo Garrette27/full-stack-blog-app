@@ -6,6 +6,8 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm install
 COPY . .
+# Verify Header.jsx contains Dashboard
+RUN grep -q "Dashboard" src/components/Header.jsx || (echo "ERROR: Dashboard not found in Header.jsx" && exit 1)
 RUN npm run build
 
 FROM nginx AS final

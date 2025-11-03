@@ -3,6 +3,10 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 
+// Import models early to ensure they're registered with Mongoose before routes use them
+import './db/models/user.js'
+import './db/models/userSession.js'
+
 import { postsRoutes } from './routes/posts.js'
 import { userRoutes } from './routes/users.js'
 import { eventRoutes } from './routes/events.js'

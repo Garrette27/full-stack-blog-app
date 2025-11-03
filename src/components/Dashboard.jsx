@@ -8,16 +8,20 @@ export function Dashboard() {
   const [token] = useAuth()
   const [activeTab, setActiveTab] = useState('overview')
 
-  const { data: analytics, isLoading: analyticsLoading } = useQuery({
+  const { data: analytics, isLoading: analyticsLoading, error: analyticsError } = useQuery({
     queryKey: ['dashboard-analytics'],
     queryFn: () => getDashboardAnalytics(token),
     enabled: !!token,
+    refetchOnWindowFocus: false, // Disable refetch on window focus to prevent intermittent errors
+    retry: 2, // Retry up to 2 times on failure
   })
 
-  const { data: sessions, isLoading: sessionsLoading } = useQuery({
+  const { data: sessions, isLoading: sessionsLoading, error: sessionsError } = useQuery({
     queryKey: ['user-sessions'],
     queryFn: () => getUserSessions(token, 20),
     enabled: !!token,
+    refetchOnWindowFocus: false, // Disable refetch on window focus to prevent intermittent errors
+    retry: 2, // Retry up to 2 times on failure
   })
 
   if (!token) {
@@ -34,6 +38,20 @@ export function Dashboard() {
       <div className="dashboard-container">
         <h2>Dashboard</h2>
         <div className="loading">Loading dashboard data...</div>
+      </div>
+    )
+  }
+
+  // Show error state if queries fail
+  if (analyticsError || sessionsError) {
+    return (
+      <div className="dashboard-container">
+        <h2>Dashboard</h2>
+        <div className="error" style={{ color: 'red', padding: '20px' }}>
+          <p>Failed to load dashboard data. Please try refreshing the page.</p>
+          {analyticsError && <p>Analytics error: {analyticsError.message}</p>}
+          {sessionsError && <p>Sessions error: {sessionsError.message}</p>}
+        </div>
       </div>
     )
   }
@@ -202,6 +220,9 @@ export function Dashboard() {
     </div>
   )
 }
+
+
+
 
 
 

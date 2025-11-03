@@ -123,10 +123,19 @@ export async function createUserSession(userId, action, req) {
 // Get user sessions for dashboard
 export async function getUserSessions(userId, limit = 50) {
   try {
-    return await UserSession.find({ userId })
+    // Remove populate as it's not needed and can cause errors with orphaned sessions
+    // The frontend only needs session data, not user data
+    const sessions = await UserSession.find({ userId })
       .sort({ timestamp: -1 })
       .limit(limit)
-      .populate('userId', 'username email')
+      .lean() // Use lean() for better performance since we don't need Mongoose documents
+    
+    // Convert to plain objects and ensure proper serialization
+    return sessions.map(session => ({
+      ...session,
+      _id: session._id.toString(),
+      userId: session.userId.toString(),
+    }))
   } catch (error) {
     console.error('Error fetching user sessions:', error)
     throw error

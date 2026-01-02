@@ -59,7 +59,7 @@ const samplePosts = [
     author: 'Daniel Bugl',
     tags: ['react', 'nodejs'],
   },
-  { title: 'Guide to TypeScript' },
+  { title: 'Guide to TypeScript', author: 'Anonymous' },
 ]
 
 let createdSamplePosts = []

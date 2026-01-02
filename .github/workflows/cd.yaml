@@ -1,51 +1,62 @@
 name: Deploy Blog Application
+
 on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: ${{ steps.deploy-frontend.outputs.url }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: google-github-actions/auth@v1
+          project_id: perfect-rider-439500-c2
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
-          service_account: ${{ secrets.GOOGLECLOUD_SERVICE_ACCOUNT }}
-          credentials_json: ${{ secrets.GOOGLECLOUD_CREDENTIALS }}
-      - name: Build and push backend image
-        uses: docker/build-push-action@v4
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/blog-backend:latest
-      - id: deploy-backend
-        name: Deploy backend
-        uses: google-github-actions/deploy-cloudrun@v1
-        with:
-          service: blog-backend
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/blog-backend:latest
-          region: ${{ secrets.GOOGLECLOUD_REGION }}
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/blog-frontend:latest
-          build-args: VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.url }}/api/v1
-      - id: deploy-frontend
-        name: Deploy frontend
-        uses: google-github-actions/deploy-cloudrun@v1
-        with:
-          service: blog-frontend
-          image: ${{ secrets.DOCKERHUB_USERNAME }}/blog-frontend:latest
-          region: ${{ secrets.GOOGLECLOUD_REGION }}
+          credentials_json: ${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}
+
+      - name: Set project
+        run: gcloud config set project perfect-rider-439500-c2
+
+      - name: Deploy Backend
+        id: deploy-backend
+        run: |
+          gcloud run deploy blog-backend-1058054107417 \
+            --source=backend/ \
+            --region=asia-east1 \
+            --set-env-vars="JWT_SECRET=my-super-secret-jwt-key-2025,DATABASE_URL=mongodb+srv://gjencomienda:Qwerty12345@cluster0.t0o3n.mongodb.net/test?retryWrites=true&w=majority" \
+            --allow-unauthenticated \
+            --quiet
+          
+          BACKEND_URL=$(gcloud run services describe blog-backend-1058054107417 --region=asia-east1 --format="value(status.url)")
+          echo "backend_url=$BACKEND_URL" >> $GITHUB_OUTPUT
+          echo "Backend deployed at: $BACKEND_URL"
+
+      - name: Deploy Frontend
+        id: deploy-frontend
+        run: |
+          gcloud run deploy blog-frontend \
+            --source=. \
+            --region=asia-east1 \
+            --set-env-vars="VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.backend_url }}/api/v1" \
+            --allow-unauthenticated \
+            --quiet
+          
+          FRONTEND_URL=$(gcloud run services describe blog-frontend --region=asia-east1 --format="value(status.url)")
+          echo "frontend_url=$FRONTEND_URL" >> $GITHUB_OUTPUT
+          echo "Frontend deployed at: $FRONTEND_URL"
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "📱 Frontend URL: ${{ steps.deploy-frontend.outputs.frontend_url }}"
+          echo "🔧 Backend URL: ${{ steps.deploy-backend.outputs.backend_url }}"

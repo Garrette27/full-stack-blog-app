@@ -13,6 +13,12 @@ export async function createUser({ username, password }) {
 }
 
 export async function loginUser({ username, password }) {
+  // Check if JWT_SECRET is configured
+  if (!process.env.JWT_SECRET) {
+    console.error('❌ JWT_SECRET is not set in environment variables')
+    throw new Error('Server configuration error: JWT_SECRET is missing')
+  }
+
   const user = await User.findOne({ username })
   if (!user) throw new Error('invalid credentials')
 
@@ -20,14 +26,21 @@ export async function loginUser({ username, password }) {
   if (!ok) throw new Error('invalid credentials')
 
   // Use username as stable subject so posts are scoped per account
-  const token = jwt.sign(
-    { sub: username, username, userId: user._id.toString() },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: '24h',
-    },
-  )
-  return { token, userId: user._id }
+  try {
+    const token = jwt.sign(
+      { sub: username, username, userId: user._id.toString() },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '24h',
+      },
+    )
+    return { token, userId: user._id }
+  } catch (jwtError) {
+    console.error('❌ JWT signing error:', jwtError)
+    throw new Error(
+      'Server configuration error: Failed to generate authentication token',
+    )
+  }
 }
 
 export async function getUserInfoById(userId) {

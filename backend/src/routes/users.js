@@ -32,8 +32,23 @@ export function userRoutes(app) {
       }
       return res.status(200).send({ token })
     } catch (err) {
+      console.error('Login error:', err.message, err.stack)
+
+      // Check if it's a configuration error
+      if (
+        err.message.includes('JWT_SECRET') ||
+        err.message.includes('configuration error')
+      ) {
+        return res.status(500).send({
+          error: 'Server configuration error. Please contact support.',
+        })
+      }
+
+      // For invalid credentials, don't reveal too much
       return res.status(400).send({
-        error: 'login failed, did you enter the correct username/password?',
+        error: err.message.includes('invalid credentials')
+          ? 'Login failed, did you enter the correct username/password?'
+          : err.message || 'Login failed. Please try again.',
       })
     }
   })

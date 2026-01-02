@@ -41,21 +41,39 @@ app.use(bodyParser.json())
 // Health/readiness check
 app.get('/healthz', (req, res) => {
   const dbReady = mongoose.connection?.readyState === 1
+  const hasJwtSecret = !!process.env.JWT_SECRET
+  const hasDatabaseUrl = !!process.env.DATABASE_URL
+
   const state = {
     dbReadyState: `${mongoose.connection?.readyState ?? 'n/a'}`,
     uptime: process.uptime(),
+    hasJwtSecret,
+    hasDatabaseUrl,
+    envVarsConfigured: hasJwtSecret && hasDatabaseUrl,
   }
-  res.status(dbReady ? 200 : 503).json(state)
+
+  // Return 503 if critical components are not ready
+  const isHealthy = dbReady && hasJwtSecret && hasDatabaseUrl
+  res.status(isHealthy ? 200 : 503).json(state)
 })
 
 // Alternate health endpoint under API prefix
 app.get('/api/v1/health', (req, res) => {
   const dbReady = mongoose.connection?.readyState === 1
+  const hasJwtSecret = !!process.env.JWT_SECRET
+  const hasDatabaseUrl = !!process.env.DATABASE_URL
+
   const state = {
     dbReadyState: `${mongoose.connection?.readyState ?? 'n/a'}`,
     uptime: process.uptime(),
+    hasJwtSecret,
+    hasDatabaseUrl,
+    envVarsConfigured: hasJwtSecret && hasDatabaseUrl,
   }
-  res.status(dbReady ? 200 : 503).json(state)
+
+  // Return 503 if critical components are not ready
+  const isHealthy = dbReady && hasJwtSecret && hasDatabaseUrl
+  res.status(isHealthy ? 200 : 503).json(state)
 })
 
 postsRoutes(app)

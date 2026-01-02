@@ -18,7 +18,14 @@ export function Login() {
       setToken(data.token)
       navigate('/')
     },
-    onError: () => alert('failed to login!'),
+    onError: (error) => {
+      console.error('Login error:', error)
+      const errorMessage =
+        error?.message ||
+        error?.error ||
+        'Failed to login. Please check your credentials and try again.'
+      alert(`Login failed: ${errorMessage}`)
+    },
   })
 
   const handleSubmit = (e) => {
@@ -62,7 +69,7 @@ export function Login() {
       <br />
       <Link to='/forgot-password'>Forgot Password?</Link>
       <br />
-      <Link to='/signup'>Don't have an account? Sign Up</Link>
+      <Link to='/signup'>Don&apos;t have an account? Sign Up</Link>
     </form>
   )
 }

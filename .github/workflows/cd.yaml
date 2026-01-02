@@ -24,6 +24,12 @@ jobs:
         with:
           project_id: perfect-rider-439500-c2
 
+      - name: Verify Authentication
+        run: |
+          gcloud auth list
+          gcloud config get-value project
+          gcloud projects describe perfect-rider-439500-c2
+
       - name: Deploy Backend
         id: deploy-backend
         run: |
@@ -31,8 +37,7 @@ jobs:
             --source=backend/ \
             --region=asia-east1 \
             --set-env-vars="JWT_SECRET=my-super-secret-jwt-key-2025,DATABASE_URL=mongodb+srv://gjencomienda:Qwerty12345@cluster0.t0o3n.mongodb.net/test?retryWrites=true&w=majority" \
-            --allow-unauthenticated \
-            --quiet
+            --allow-unauthenticated
           
           BACKEND_URL=$(gcloud run services describe blog-backend-1058054107417 --region=asia-east1 --format="value(status.url)")
           echo "backend_url=$BACKEND_URL" >> $GITHUB_OUTPUT
@@ -45,8 +50,7 @@ jobs:
             --source=. \
             --region=asia-east1 \
             --set-env-vars="VITE_BACKEND_URL=${{ steps.deploy-backend.outputs.backend_url }}/api/v1" \
-            --allow-unauthenticated \
-            --quiet
+            --allow-unauthenticated
           
           FRONTEND_URL=$(gcloud run services describe blog-frontend --region=asia-east1 --format="value(status.url)")
           echo "frontend_url=$FRONTEND_URL" >> $GITHUB_OUTPUT

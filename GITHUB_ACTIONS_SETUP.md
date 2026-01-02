@@ -94,10 +94,19 @@ The workflow (`.github/workflows/cd.yaml`) is configured to:
 - Check that the service account has the correct roles (Cloud Run Admin, Service Account User)
 - Verify the JSON credentials in GitHub Secrets are correct (full file contents)
 
-### Workflow Fails with "API Not Enabled"
+### Workflow Fails with "API Not Enabled" or Git Errors
 
-- Enable the required APIs: Cloud Run API, Cloud Build API, Cloud Resource Manager API
-- Go to [APIs & Services](https://console.cloud.google.com/apis/library) and enable them
+- **Enable the required APIs** (CRITICAL):
+  - Cloud Run API
+  - Cloud Build API (this is especially important for `--source` deployments)
+  - Cloud Resource Manager API
+  - Go to [APIs & Services](https://console.cloud.google.com/apis/library) and enable them
+  
+- **If you see git errors**: This usually means Cloud Build API is not enabled or the service account doesn't have Cloud Build permissions
+- **Grant Cloud Build permissions to the default service account**:
+  - Go to IAM & Admin → IAM
+  - Find the service account: `[PROJECT-NUMBER]-compute@developer.gserviceaccount.com`
+  - Grant it the "Cloud Run Admin" role (so Cloud Build can deploy)
 
 ### Deployment Works But App Doesn't Update
 

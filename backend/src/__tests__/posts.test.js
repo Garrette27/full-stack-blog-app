@@ -49,14 +49,14 @@ describe('creating posts', () => {
 })
 
 const samplePosts = [
-  { title: 'Learning Redux', author: 'Daniel Bugl', tags: ['redux'] },
-  { title: 'Learn React Hooks', author: 'Daniel Bugl', tags: ['react'] },
+  { userId: 'Daniel Bugl', title: 'Learning Redux', tags: ['redux'] },
+  { userId: 'Daniel Bugl', title: 'Learn React Hooks', tags: ['react'] },
   {
+    userId: 'Daniel Bugl',
     title: 'Full-Stack React Projects',
-    author: 'Daniel Bugl',
     tags: ['react', 'nodejs'],
   },
-  { title: 'Guide to TypeScript', author: 'Anonymous' },
+  { userId: 'Anonymous', title: 'Guide to TypeScript' },
 ]
 
 let createdSamplePosts = []
@@ -65,8 +65,9 @@ beforeEach(async () => {
   await Post.deleteMany({})
   createdSamplePosts = []
   for (const post of samplePosts) {
-    const createdPost = new Post(post)
-    createdSamplePosts.push(await createdPost.save())
+    const { userId, ...postData } = post
+    const createdPost = await createPost(userId, postData)
+    createdSamplePosts.push(createdPost)
   }
 })
 

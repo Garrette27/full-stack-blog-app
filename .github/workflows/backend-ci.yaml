@@ -31,11 +31,8 @@ jobs:
 
       - name: Install libssl1.1 for mongodb-memory-server
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libssl1.1 || echo "libssl1.1 not available, attempting symlink"
-          if [ ! -f /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 ]; then
-            sudo ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.3 /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 || true
-          fi
+          wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl1.1/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+          sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
 
       - name: Install dependencies
         run: npm install

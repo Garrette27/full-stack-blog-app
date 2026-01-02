@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getDashboardAnalytics, getUserSessions } from '../api/dashboard.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
@@ -8,7 +8,11 @@ export function Dashboard() {
   const [token] = useAuth()
   const [activeTab, setActiveTab] = useState('overview')
 
-  const { data: analytics, isLoading: analyticsLoading, error: analyticsError } = useQuery({
+  const {
+    data: analytics,
+    isLoading: analyticsLoading,
+    error: analyticsError,
+  } = useQuery({
     queryKey: ['dashboard-analytics'],
     queryFn: () => getDashboardAnalytics(token),
     enabled: !!token,
@@ -16,7 +20,11 @@ export function Dashboard() {
     retry: 2, // Retry up to 2 times on failure
   })
 
-  const { data: sessions, isLoading: sessionsLoading, error: sessionsError } = useQuery({
+  const {
+    data: sessions,
+    isLoading: sessionsLoading,
+    error: sessionsError,
+  } = useQuery({
     queryKey: ['user-sessions'],
     queryFn: () => getUserSessions(token, 20),
     enabled: !!token,
@@ -26,7 +34,7 @@ export function Dashboard() {
 
   if (!token) {
     return (
-      <div className="dashboard-container">
+      <div className='dashboard-container'>
         <h2>Dashboard</h2>
         <p>Please log in to view your dashboard.</p>
       </div>
@@ -35,9 +43,9 @@ export function Dashboard() {
 
   if (analyticsLoading || sessionsLoading) {
     return (
-      <div className="dashboard-container">
+      <div className='dashboard-container'>
         <h2>Dashboard</h2>
-        <div className="loading">Loading dashboard data...</div>
+        <div className='loading'>Loading dashboard data...</div>
       </div>
     )
   }
@@ -45,9 +53,9 @@ export function Dashboard() {
   // Show error state if queries fail
   if (analyticsError || sessionsError) {
     return (
-      <div className="dashboard-container">
+      <div className='dashboard-container'>
         <h2>Dashboard</h2>
-        <div className="error" style={{ color: 'red', padding: '20px' }}>
+        <div className='error' style={{ color: 'red', padding: '20px' }}>
           <p>Failed to load dashboard data. Please try refreshing the page.</p>
           {analyticsError && <p>Analytics error: {analyticsError.message}</p>}
           {sessionsError && <p>Sessions error: {sessionsError.message}</p>}
@@ -65,29 +73,29 @@ export function Dashboard() {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className='dashboard-container'>
       <h2>User Dashboard</h2>
-      
-      <div className="dashboard-tabs">
-        <button 
+
+      <div className='dashboard-tabs'>
+        <button
           className={activeTab === 'overview' ? 'active' : ''}
           onClick={() => setActiveTab('overview')}
         >
           Overview
         </button>
-        <button 
+        <button
           className={activeTab === 'devices' ? 'active' : ''}
           onClick={() => setActiveTab('devices')}
         >
           Devices
         </button>
-        <button 
+        <button
           className={activeTab === 'locations' ? 'active' : ''}
           onClick={() => setActiveTab('locations')}
         >
           Locations
         </button>
-        <button 
+        <button
           className={activeTab === 'activity' ? 'active' : ''}
           onClick={() => setActiveTab('activity')}
         >
@@ -95,24 +103,30 @@ export function Dashboard() {
         </button>
       </div>
 
-      <div className="dashboard-content">
+      <div className='dashboard-content'>
         {activeTab === 'overview' && (
-          <div className="overview-section">
-            <div className="stats-grid">
-              <div className="stat-card">
+          <div className='overview-section'>
+            <div className='stats-grid'>
+              <div className='stat-card'>
                 <h3>Total Sessions</h3>
-                <div className="stat-value">{analytics?.totalSessions || 0}</div>
-              </div>
-              <div className="stat-card">
-                <h3>Last Login</h3>
-                <div className="stat-value">
-                  {analytics?.lastLogin ? formatDate(analytics.lastLogin) : 'Never'}
+                <div className='stat-value'>
+                  {analytics?.totalSessions || 0}
                 </div>
               </div>
-              <div className="stat-card">
+              <div className='stat-card'>
+                <h3>Last Login</h3>
+                <div className='stat-value'>
+                  {analytics?.lastLogin
+                    ? formatDate(analytics.lastLogin)
+                    : 'Never'}
+                </div>
+              </div>
+              <div className='stat-card'>
                 <h3>Account Created</h3>
-                <div className="stat-value">
-                  {analytics?.lastSignup ? formatDate(analytics.lastSignup) : 'Unknown'}
+                <div className='stat-value'>
+                  {analytics?.lastSignup
+                    ? formatDate(analytics.lastSignup)
+                    : 'Unknown'}
                 </div>
               </div>
             </div>
@@ -120,38 +134,44 @@ export function Dashboard() {
         )}
 
         {activeTab === 'devices' && (
-          <div className="devices-section">
+          <div className='devices-section'>
             <h3>Device Analytics</h3>
-            <div className="analytics-grid">
-              <div className="analytics-card">
+            <div className='analytics-grid'>
+              <div className='analytics-card'>
                 <h4>Device Types</h4>
-                <div className="analytics-list">
-                  {Object.entries(analytics?.deviceStats?.deviceTypes || {}).map(([device, count]) => (
-                    <div key={device} className="analytics-item">
-                      <span className="device-type">{device}</span>
-                      <span className="count">{count}</span>
+                <div className='analytics-list'>
+                  {Object.entries(
+                    analytics?.deviceStats?.deviceTypes || {},
+                  ).map(([device, count]) => (
+                    <div key={device} className='analytics-item'>
+                      <span className='device-type'>{device}</span>
+                      <span className='count'>{count}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="analytics-card">
+              <div className='analytics-card'>
                 <h4>Browsers</h4>
-                <div className="analytics-list">
-                  {Object.entries(analytics?.deviceStats?.browsers || {}).map(([browser, count]) => (
-                    <div key={browser} className="analytics-item">
-                      <span className="browser">{browser}</span>
-                      <span className="count">{count}</span>
-                    </div>
-                  ))}
+                <div className='analytics-list'>
+                  {Object.entries(analytics?.deviceStats?.browsers || {}).map(
+                    ([browser, count]) => (
+                      <div key={browser} className='analytics-item'>
+                        <span className='browser'>{browser}</span>
+                        <span className='count'>{count}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
-              <div className="analytics-card">
+              <div className='analytics-card'>
                 <h4>Operating Systems</h4>
-                <div className="analytics-list">
-                  {Object.entries(analytics?.deviceStats?.operatingSystems || {}).map(([os, count]) => (
-                    <div key={os} className="analytics-item">
-                      <span className="os">{os}</span>
-                      <span className="count">{count}</span>
+                <div className='analytics-list'>
+                  {Object.entries(
+                    analytics?.deviceStats?.operatingSystems || {},
+                  ).map(([os, count]) => (
+                    <div key={os} className='analytics-item'>
+                      <span className='os'>{os}</span>
+                      <span className='count'>{count}</span>
                     </div>
                   ))}
                 </div>
@@ -161,29 +181,33 @@ export function Dashboard() {
         )}
 
         {activeTab === 'locations' && (
-          <div className="locations-section">
+          <div className='locations-section'>
             <h3>Location Analytics</h3>
-            <div className="analytics-grid">
-              <div className="analytics-card">
+            <div className='analytics-grid'>
+              <div className='analytics-card'>
                 <h4>Countries</h4>
-                <div className="analytics-list">
-                  {Object.entries(analytics?.locationStats?.countries || {}).map(([country, count]) => (
-                    <div key={country} className="analytics-item">
-                      <span className="country">{country}</span>
-                      <span className="count">{count}</span>
+                <div className='analytics-list'>
+                  {Object.entries(
+                    analytics?.locationStats?.countries || {},
+                  ).map(([country, count]) => (
+                    <div key={country} className='analytics-item'>
+                      <span className='country'>{country}</span>
+                      <span className='count'>{count}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="analytics-card">
+              <div className='analytics-card'>
                 <h4>Cities</h4>
-                <div className="analytics-list">
-                  {Object.entries(analytics?.locationStats?.cities || {}).map(([city, count]) => (
-                    <div key={city} className="analytics-item">
-                      <span className="city">{city}</span>
-                      <span className="count">{count}</span>
-                    </div>
-                  ))}
+                <div className='analytics-list'>
+                  {Object.entries(analytics?.locationStats?.cities || {}).map(
+                    ([city, count]) => (
+                      <div key={city} className='analytics-item'>
+                        <span className='city'>{city}</span>
+                        <span className='count'>{count}</span>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
             </div>
@@ -191,25 +215,40 @@ export function Dashboard() {
         )}
 
         {activeTab === 'activity' && (
-          <div className="activity-section">
+          <div className='activity-section'>
             <h3>Recent Activity</h3>
-            <div className="activity-timeline">
+            <div className='activity-timeline'>
               {sessions?.map((session, index) => (
-                <div key={index} className="activity-item">
-                  <div className="activity-icon">
-                    {session.action === 'login' ? '🔑' : session.action === 'signup' ? '📝' : '🚪'}
+                <div key={index} className='activity-item'>
+                  <div className='activity-icon'>
+                    {session.action === 'login'
+                      ? '🔑'
+                      : session.action === 'signup'
+                        ? '📝'
+                        : '🚪'}
                   </div>
-                  <div className="activity-content">
-                    <div className="activity-action">
-                      {session.action === 'login' ? 'Logged In' : 
-                       session.action === 'signup' ? 'Account Created' : 'Logged Out'}
+                  <div className='activity-content'>
+                    <div className='activity-action'>
+                      {session.action === 'login'
+                        ? 'Logged In'
+                        : session.action === 'signup'
+                          ? 'Account Created'
+                          : 'Logged Out'}
                     </div>
-                    <div className="activity-details">
-                      <span className="device">{session.deviceInfo?.deviceType || 'Unknown'} • </span>
-                      <span className="browser">{session.deviceInfo?.browser || 'Unknown'} • </span>
-                      <span className="location">{formatLocation(session.locationInfo)}</span>
+                    <div className='activity-details'>
+                      <span className='device'>
+                        {session.deviceInfo?.deviceType || 'Unknown'} •{' '}
+                      </span>
+                      <span className='browser'>
+                        {session.deviceInfo?.browser || 'Unknown'} •{' '}
+                      </span>
+                      <span className='location'>
+                        {formatLocation(session.locationInfo)}
+                      </span>
                     </div>
-                    <div className="activity-time">{formatDate(session.timestamp)}</div>
+                    <div className='activity-time'>
+                      {formatDate(session.timestamp)}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -220,27 +259,3 @@ export function Dashboard() {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { PostList } from '../components/PostList.jsx'
 import { CreatePost } from '../components/CreatePost.jsx'
-import { PostFilter } from '../components/PostFilter.jsx'
 import { PostSorting } from '../components/PostSorting.jsx'
 import { Header } from '../components/Header.jsx'
 import { PostStats } from '../components/PostStats.jsx'
@@ -14,7 +13,7 @@ export function Blog() {
   const [sortOrder, setSortOrder] = useState('descending')
   const [showStats, setShowStats] = useState(false)
   const [selectedPostId, setSelectedPostId] = useState(null)
-  const [token, setToken, , userId] = useAuth()
+  const [token, , , userId] = useAuth()
 
   const postsQuery = useQuery({
     queryKey: ['posts', { author: userId, sortBy, sortOrder }],
@@ -45,23 +44,30 @@ export function Blog() {
       <br />
       <hr />
       <br />
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div
+        style={{
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <h2>My Blog Posts</h2>
-        <button 
+        <button
           onClick={() => {
             setShowStats(!showStats)
             if (!showStats && posts.length > 0) {
               setSelectedPostId(posts[0]._id)
             }
           }}
-          style={{ 
-            background: '#4CAF50', 
-            color: 'white', 
-            border: 'none', 
-            padding: '10px 20px', 
+          style={{
+            background: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
             cursor: 'pointer',
             borderRadius: '4px',
-            fontSize: '14px'
+            fontSize: '14px',
           }}
         >
           {showStats ? 'Hide' : 'Show'} Analytics
@@ -81,7 +87,9 @@ export function Blog() {
       <div style={{ display: 'flex', gap: '20px' }}>
         <div style={{ flex: 1 }}>
           {posts.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+            <div
+              style={{ textAlign: 'center', padding: '40px', color: '#666' }}
+            >
               <h3>No posts yet</h3>
               <p>Create your first blog post using the form above!</p>
             </div>
@@ -90,12 +98,31 @@ export function Blog() {
           )}
         </div>
         {showStats && selectedPostId && (
-          <div style={{ width: '600px', border: '1px solid #ccc', padding: '10px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div
+            style={{
+              width: '600px',
+              border: '1px solid #ccc',
+              padding: '10px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '10px',
+              }}
+            >
               <h3>Statistics</h3>
-              <button 
+              <button
                 onClick={() => setShowStats(false)}
-                style={{ background: '#f44336', color: 'white', border: 'none', padding: '5px 10px', cursor: 'pointer' }}
+                style={{
+                  background: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  padding: '5px 10px',
+                  cursor: 'pointer',
+                }}
               >
                 Close
               </button>

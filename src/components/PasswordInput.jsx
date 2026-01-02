@@ -1,15 +1,16 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
-export function PasswordInput({ 
-  id, 
-  name, 
-  value, 
-  onChange, 
-  placeholder = '', 
+export function PasswordInput({
+  id,
+  name,
+  value,
+  onChange,
+  placeholder = '',
   required = false,
   minLength,
   style = {},
-  ...props 
+  ...props
 }) {
   const [showPassword, setShowPassword] = useState(false)
 
@@ -35,12 +36,12 @@ export function PasswordInput({
           borderRadius: '4px',
           boxSizing: 'border-box',
           fontSize: '16px',
-          ...props.style
+          ...props.style,
         }}
         {...props}
       />
       <button
-        type="button"
+        type='button'
         onClick={togglePasswordVisibility}
         style={{
           position: 'absolute',
@@ -57,10 +58,10 @@ export function PasswordInput({
           fontSize: '18px',
           color: '#666',
           outline: 'none',
-          zIndex: 1
+          zIndex: 1,
         }}
-        onMouseEnter={(e) => e.target.style.color = '#333'}
-        onMouseLeave={(e) => e.target.style.color = '#666'}
+        onMouseEnter={(e) => (e.target.style.color = '#333')}
+        onMouseLeave={(e) => (e.target.style.color = '#666')}
         aria-label={showPassword ? 'Hide password' : 'Show password'}
       >
         {showPassword ? '🙈' : '👁️'}
@@ -69,3 +70,20 @@ export function PasswordInput({
   )
 }
 
+PasswordInput.propTypes = {
+  id: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  required: PropTypes.bool,
+  minLength: PropTypes.number,
+  style: PropTypes.object,
+}
+
+PasswordInput.defaultProps = {
+  placeholder: '',
+  required: false,
+  minLength: 0,
+  style: {},
+}

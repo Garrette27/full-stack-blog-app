@@ -1,6 +1,5 @@
 import { User } from '../db/models/user.js'
 import { Post } from '../db/models/post.js'
-import { requireAuth } from '../middleware/jwt.js'
 
 export function adminRoutes(app) {
   // Admin endpoint to check database contents (temporary for debugging)
@@ -8,13 +7,13 @@ export function adminRoutes(app) {
     try {
       // Get all users
       const users = await User.find({}).select('username email _id')
-      
+
       // Get all posts with author info
       const posts = await Post.find({}).populate('author', 'username email')
-      
+
       // Check if gjencomienda@gmail.com exists
       const targetUser = await User.findOne({ email: 'gjencomienda@gmail.com' })
-      
+
       const result = {
         users: users,
         posts: posts,
@@ -23,10 +22,10 @@ export function adminRoutes(app) {
         summary: {
           totalUsers: users.length,
           totalPosts: posts.length,
-          postsWithAuthors: posts.filter(p => p.author).length
-        }
+          postsWithAuthors: posts.filter((p) => p.author).length,
+        },
       }
-      
+
       return res.json(result)
     } catch (error) {
       console.error('Error checking database:', error)
@@ -38,25 +37,25 @@ export function adminRoutes(app) {
   app.post('/api/v1/admin/map-posts-to-user', async (req, res) => {
     try {
       const { targetEmail, postIds } = req.body
-      
+
       if (!targetEmail) {
         return res.status(400).json({ error: 'targetEmail is required' })
       }
-      
+
       // Find the target user
       const targetUser = await User.findOne({ email: targetEmail })
       if (!targetUser) {
         return res.status(404).json({ error: 'Target user not found' })
       }
-      
+
       let query = {}
       if (postIds && postIds.length > 0) {
         query._id = { $in: postIds }
       }
-      
+
       // Update posts to point to the target user
       const result = await Post.updateMany(query, { author: targetUser._id })
-      
+
       return res.json({
         message: 'Posts mapped successfully',
         matchedCount: result.matchedCount,
@@ -64,8 +63,8 @@ export function adminRoutes(app) {
         targetUser: {
           id: targetUser._id,
           username: targetUser.username,
-          email: targetUser.email
-        }
+          email: targetUser.email,
+        },
       })
     } catch (error) {
       console.error('Error mapping posts:', error)
@@ -73,4 +72,3 @@ export function adminRoutes(app) {
     }
   })
 }
-

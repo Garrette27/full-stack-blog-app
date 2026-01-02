@@ -1,9 +1,6 @@
 import {
   likePost,
   sharePost,
-  listAllPosts,
-  listPostsByAuthor,
-  listPostsByTag,
   listPostsByUser,
   listPostsByTagAndUser,
   getPostById,
@@ -19,11 +16,11 @@ export function postsRoutes(app) {
     const { sortBy, sortOrder, author, tag } = req.query
     const options = { sortBy, sortOrder }
     const userKey = req.auth?.username || req.auth?.sub
-    
+
     console.log('Posts request - User Key:', userKey, 'Auth object:', req.auth)
     console.log('Posts request - Headers:', req.headers.authorization)
     console.log('Posts request - Query params:', req.query)
-    
+
     try {
       if (author && tag) {
         return res
@@ -31,7 +28,9 @@ export function postsRoutes(app) {
           .json({ error: 'Query by either author or tag, not both' })
       } else if (author) {
         if (author !== userKey) {
-          return res.status(403).json({ error: 'Access denied: Can only view your own posts' })
+          return res
+            .status(403)
+            .json({ error: 'Access denied: Can only view your own posts' })
         }
         const posts = await listPostsByUser(author, options)
         return res.json(posts)

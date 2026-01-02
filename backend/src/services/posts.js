@@ -5,7 +5,9 @@ import { User } from '../db/models/user.js'
 export async function createPost(userId, { title, contents, tags }) {
   let normalizedTags = []
   if (Array.isArray(tags)) {
-    normalizedTags = tags.filter((t) => typeof t === 'string' && t.trim() !== '').map((t) => t.trim())
+    normalizedTags = tags
+      .filter((t) => typeof t === 'string' && t.trim() !== '')
+      .map((t) => t.trim())
   } else if (typeof tags === 'string') {
     normalizedTags = tags
       .split(',')
@@ -13,7 +15,12 @@ export async function createPost(userId, { title, contents, tags }) {
       .filter((t) => t.length > 0)
   }
 
-  const post = new Post({ title, author: String(userId), contents, tags: normalizedTags })
+  const post = new Post({
+    title,
+    author: String(userId),
+    contents,
+    tags: normalizedTags,
+  })
   return await post.save()
 }
 
@@ -37,9 +44,7 @@ export async function listAllPosts(options) {
 }
 
 export async function listPostsByAuthor(authorUsername, options) {
-  const user = await User.findOne({ username: authorUsername })
-  if (!user) return []
-  return await listPosts({ author: user._id }, options)
+  return await listPosts({ author: authorUsername }, options)
 }
 
 export async function listPostsByTag(tags, options) {

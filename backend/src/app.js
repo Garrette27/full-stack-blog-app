@@ -18,7 +18,11 @@ const app = express()
 
 // Configure CORS to allow requests from deployed frontend domains
 const corsOptions = {
-  origin: true, // Allow all origins temporarily for debugging
+  origin: [
+    'http://localhost:5173', // Vite dev server
+    'https://full-stack-blog-app-ten.vercel.app', // Your Vercel frontend
+    /^https:\/\/.*\.vercel\.app$/ // Allow all Vercel subdomains
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

@@ -6,7 +6,11 @@ import { app } from './app.js'
 import { initDatabase } from './db/init.js'
 
 // Connect to database for all environments
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+  bufferMaxEntries: 0, // Disable mongoose buffering
+  bufferCommands: false, // Disable mongoose buffering
+})
   .then(() => {
     console.log('✅ MongoDB Atlas Connected!')
   })

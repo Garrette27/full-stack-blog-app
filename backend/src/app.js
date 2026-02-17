@@ -16,14 +16,6 @@ import { dashboardRoutes } from './routes/dashboard.js'
 
 const app = express()
 
-// Middleware to ensure database is connected before processing requests
-app.use((req, res, next) => {
-  if (mongoose.connection.readyState !== 1) {
-    return res.status(503).json({ error: 'Database not connected' })
-  }
-  next()
-})
-
 // Configure CORS to allow requests from deployed frontend domains
 const corsOptions = {
   origin: [

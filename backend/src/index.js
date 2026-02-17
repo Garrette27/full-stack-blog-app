@@ -7,7 +7,12 @@ import { app } from './app.js'
 // Ensure database connection is established before exporting app
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI, {
+    const uri = process.env.MONGODB_URI || process.env.DATABASE_URL
+    if (!uri) {
+      throw new Error('Neither MONGODB_URI nor DATABASE_URL is set')
+    }
+    
+    await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 30000,
       connectTimeoutMS: 30000,
       bufferMaxEntries: 0,

@@ -1,14 +1,23 @@
 import dotenv from 'dotenv'
-dotenv.config()
+dotenv.config({ path: '../database.env' })
 
 import mongoose from 'mongoose'
 import { app } from './app.js'
 import { initDatabase } from './db/init.js'
 
-// For Vercel serverless functions, export the app directly
+// Connect to database for all environments
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('✅ MongoDB Atlas Connected!')
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB Connection Failed:', error.message)
+  })
+
+// For Vercel serverless functions, export app directly
 export default app
 
-// For local development, start the server
+// For local development, start server
 if (process.env.NODE_ENV !== 'production') {
   const startServer = async () => {
     try {

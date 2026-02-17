@@ -18,10 +18,23 @@ export function initDatabase() {
     console.error('❌ Database connection error:', err)
   })
 
-  return mongoose.connect(DATABASE_URL, {
-    serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
-    connectTimeoutMS: 30000,
-    bufferMaxEntries: 0, // Disable mongoose buffering
-    bufferCommands: false, // Disable mongoose buffering
-  })
+  // For serverless, we need to handle connection differently
+  if (process.env.NODE_ENV === 'production') {
+    // In Vercel serverless, connect without waiting
+    return mongoose.connect(DATABASE_URL, {
+      serverSelectionTimeoutMS: 30000,
+      connectTimeoutMS: 30000,
+      bufferMaxEntries: 0,
+      bufferCommands: false,
+      maxPoolSize: 1, // Limit connections for serverless
+    })
+  } else {
+    // For local development
+    return mongoose.connect(DATABASE_URL, {
+      serverSelectionTimeoutMS: 30000,
+      connectTimeoutMS: 30000,
+      bufferMaxEntries: 0,
+      bufferCommands: false,
+    })
+  }
 }
